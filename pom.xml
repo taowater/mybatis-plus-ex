@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.zistory</groupId>
+    <artifactId>mybatis-plus-ex</artifactId>
+    <version>0.0.1</version>
+    <name>mybatis-plus-ex</name>
+
+
+    <properties>
+        <hutool.version>6.0.0-M13</hutool.version>
+        <ztream.version>0.0.1</ztream.version>
+        <mybatis-plus.version>3.5.6</mybatis-plus.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dromara.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.zistory</groupId>
+            <artifactId>ztream</artifactId>
+            <version>${ztream.version}</version>
+        </dependency>
+    </dependencies>
+</project>
