@@ -1,4 +1,4 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
@@ -14,7 +14,7 @@ import lombok.Setter;
  * @date 2023/09/02 01:11
  */
 @Getter
-public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
+abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
         extends AbstractLambdaWrapper<T, W>
         implements CompareRequired<W, SFunction<T, ?>>, CompareIfNotEmpty<W, SFunction<T, ?>>, CompareColumn<W, SFunction<T, ?>> {
 

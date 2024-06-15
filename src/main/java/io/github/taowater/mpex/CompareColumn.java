@@ -1,4 +1,4 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 /**
  * 字段比较
@@ -6,7 +6,7 @@ package io.github.zistory.mpex;
  * @author zhu56
  * @date 2023/09/04 23:31
  */
-public interface CompareColumn<W, R> {
+interface CompareColumn<W, R> {
 
     /**
      * 字段1 = 字段2

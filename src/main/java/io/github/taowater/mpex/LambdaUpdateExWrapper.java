@@ -1,4 +1,4 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2023/09/02 00:46
  * @see LambdaUpdateWrapper
  */
-public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
+class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
         implements Update<LambdaUpdateExWrapper<T>, SFunction<T, ?>>, UpdateSelf<LambdaUpdateExWrapper<T>, SFunction<T, ?>> {
 
     private final List<String> sqlSet;

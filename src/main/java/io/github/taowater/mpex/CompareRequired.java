@@ -1,8 +1,8 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
-import io.github.zistory.util.EmptyUtil;
+import io.github.taowater.util.EmptyUtil;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ import java.util.Collection;
  * @author zhu56
  * @date 2023/09/12 10:48:16
  */
-public interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
+interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
 
     void setNeedQuery(Boolean flag);
 

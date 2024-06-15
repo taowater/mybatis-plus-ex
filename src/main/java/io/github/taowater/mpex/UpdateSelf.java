@@ -1,7 +1,7 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 
-import io.github.zistory.util.EmptyUtil;
+import io.github.taowater.util.EmptyUtil;
 
 /**
  * 自更新
@@ -9,7 +9,7 @@ import io.github.zistory.util.EmptyUtil;
  * @author zhu56
  * @date 2023/09/04 22:33
  */
-public interface UpdateSelf<W, R> {
+interface UpdateSelf<W, R> {
 
 
     /**

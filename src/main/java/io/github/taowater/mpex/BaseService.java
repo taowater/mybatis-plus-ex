@@ -1,11 +1,11 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.github.zistory.Any;
-import io.github.zistory.Ztream;
-import io.github.zistory.util.EmptyUtil;
+import io.github.taowater.util.EmptyUtil;
+import io.github.taowater.ztream.Any;
+import io.github.taowater.ztream.Ztream;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.function.Function;
  * @author 朱滔
  * @date 2022/11/20 02:23:15
  */
-interface QuickQueryService<P, M extends BaseExMapper<P>> extends IService<P> {
+public interface BaseService<P, M extends BaseMapper<P>> extends IService<P> {
 
     @Override
     M getBaseMapper();

@@ -1,17 +1,13 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.reflect.GenericTypeUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.github.zistory.Any;
-import io.github.zistory.Ztream;
-import io.github.zistory.inter.SerFunction;
-import io.github.zistory.util.ConvertUtil;
-import io.github.zistory.util.EmptyUtil;
-import io.github.zistory.util.LambdaUtil;
+import io.github.taowater.util.ConvertUtil;
+import io.github.taowater.util.EmptyUtil;
+import io.github.taowater.ztream.Any;
+import io.github.taowater.ztream.Ztream;
+import lombok.var;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 
 import java.io.Serializable;
@@ -26,7 +22,7 @@ import java.util.function.Function;
  * @date 2023/08/12 02:40
  */
 @SuppressWarnings("unchecked")
-public interface BaseExMapper<P> extends BaseMapper<P> {
+public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<P> {
 
     /**
      * 查询总记录数
@@ -35,7 +31,8 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return {@link Long}
      */
     default Long selectCount(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return wrapQuery(this::selectCount, consumer).orElse(0L);
+        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
+        return Any.of(result).orElse(0L);
     }
 
     /**
@@ -45,7 +42,8 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return {@link List}<{@link P}>
      */
     default List<P> selectList(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return wrapQuery(this::selectList, consumer).orElse(new ArrayList<>(0));
+        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectList, LambdaQueryExWrapper::new);
+        return Any.of(result).orElse(new ArrayList<>(0));
     }
 
     /**
@@ -56,7 +54,8 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return {@link Page}<{@link P}>
      */
     default <E extends IPage<P>> E selectPage(E page, Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return wrapQuery(w -> selectPage(page, w), consumer).orElse(page);
+        var result = ExecuteHelper.execute(this, consumer, (m, w) -> m.selectPage(page, w), LambdaQueryExWrapper::new);
+        return Any.of(result).orElse(page);
     }
 
     /**
@@ -97,18 +96,17 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return {@link Any}<{@link P}>
      */
     default Any<P> selectOneX(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return wrapQuery(w -> selectOne(w, false), consumer);
+        return Any.of(selectOne(consumer));
     }
 
     /**
      * 判断是否存在
-     * 避免全查，只limit1定性
      *
      * @param consumer 操作
      * @return boolean
      */
     default boolean exists(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return EmptyUtil.isNotEmpty(this.selectLimit(consumer, 1));
+        return Objects.nonNull(this.selectOne(consumer));
     }
 
     /**
@@ -126,7 +124,7 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
         if (throwEx && list.size() > 1) {
             throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but more");
         }
-        return list.getFirst();
+        return list.get(0);
     }
 
     /**
@@ -137,7 +135,7 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return int 更新数量
      */
     default int update(P e, Consumer<LambdaUpdateExWrapper<P>> consumer) {
-        Integer update = execute(consumer, w -> update(e, w), LambdaUpdateExWrapper::new);
+        Integer update = ExecuteHelper.execute(this, consumer, (m, w) -> m.update(e, w), LambdaUpdateExWrapper::new);
         return Any.of(update).orElse(0);
     }
 
@@ -158,7 +156,8 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      * @return int 删除数量
      */
     default int delete(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return wrapQuery(this::delete, consumer).orElse(0);
+        var result = ExecuteHelper.execute(this, consumer, BaseMapper::delete, LambdaQueryExWrapper::new);
+        return Any.of(result).orElse(0);
     }
 
     /**
@@ -237,47 +236,5 @@ public interface BaseExMapper<P> extends BaseMapper<P> {
      */
     default <K extends Serializable, A> Map<K, A> mapBy(SFunction<P, K> field, Collection<K> values, Class<A> clazzV) {
         return mapBy(field, values, e -> ConvertUtil.convert(e, clazzV));
-    }
-
-    /**
-     * 包装查询
-     *
-     * @param fun      方法
-     * @param consumer wrapper处理逻辑
-     * @return {@link Any}<{@link R}>
-     */
-    private <R> Any<R> wrapQuery(SerFunction<LambdaQueryExWrapper<P>, R> fun, Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return Any.of(execute(consumer, fun, LambdaQueryExWrapper::new));
-    }
-
-    /**
-     * 基础执行逻辑
-     *
-     * @param consumer         wrapper处理逻辑
-     * @param thisMapperMethod 本mapper的方法
-     * @param wrapperFun       wrapper构建方法
-     * @return {@link R}
-     */
-    private <W extends Wrapper<P>, R> R execute(Consumer<W> consumer, SerFunction<W, R> thisMapperMethod, Function<Class<P>, W> wrapperFun) {
-        if (EmptyUtil.isHadEmpty(consumer, thisMapperMethod, wrapperFun)) {
-            return null;
-        }
-        // 获得该mapper操作的实体类型
-        var classes = GenericTypeUtils.resolveTypeArguments(this.getClass(), BaseMapper.class);
-        Class<P> clazz = (Class<P>) Any.of(classes).get(l -> l[0]);
-        // 获取wrapper对象
-        W wrapper = wrapperFun.apply(clazz);
-        // 使用操作流程处理该wrapper
-        consumer.accept(wrapper);
-        //如果是拓展的wrapper类型
-        if (wrapper instanceof AbstractLambdaExWrapper<?, ?> w) {
-            //如果无需查库则返回对应类型的默认值
-            if (!Any.of(w).get(AbstractLambdaExWrapper::getNeedQuery, true)) {
-                Class<R> returnClazz = LambdaUtil.getReturnClass(thisMapperMethod);
-                return DefaultHelper.getValue(returnClazz);
-            }
-        }
-        // 执行查询并返回结果
-        return thisMapperMethod.apply(wrapper);
     }
 }

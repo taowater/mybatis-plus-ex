@@ -1,8 +1,8 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.github.zistory.Ztream;
+import io.github.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;
 import org.dromara.hutool.core.map.MapUtil;
 
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 @UtilityClass
 @SuppressWarnings("unchecked")
-public class DefaultHelper {
+class DefaultHelper {
 
     /**
      * 建立对应类型的默认值映射

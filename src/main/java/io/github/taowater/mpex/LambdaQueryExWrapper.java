@@ -1,4 +1,4 @@
-package io.github.zistory.mpex;
+package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * @date 2023/09/02 00:46
  * @see LambdaQueryWrapper
  */
-public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
+class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
         implements Query<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
 
     private SharedString sqlSelect = new SharedString();
