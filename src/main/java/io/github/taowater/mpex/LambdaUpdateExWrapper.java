@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2023/09/02 00:46
  * @see LambdaUpdateWrapper
  */
-class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
+public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
         implements Update<LambdaUpdateExWrapper<T>, SFunction<T, ?>>, UpdateSelf<LambdaUpdateExWrapper<T>, SFunction<T, ?>> {
 
     private final List<String> sqlSet;

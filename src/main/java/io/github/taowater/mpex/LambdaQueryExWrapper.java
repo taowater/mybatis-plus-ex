@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * @date 2023/09/02 00:46
  * @see LambdaQueryWrapper
  */
-class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
+public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
         implements Query<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
 
     private SharedString sqlSelect = new SharedString();
