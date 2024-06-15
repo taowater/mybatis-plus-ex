@@ -3,7 +3,7 @@ package io.github.taowater.mpex;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.github.taowater.util.EmptyUtil;
+import io.github.taowater.core.util.EmptyUtil;
 import io.github.taowater.ztream.Any;
 import io.github.taowater.ztream.Ztream;
 

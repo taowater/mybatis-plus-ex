@@ -3,7 +3,7 @@ package io.github.taowater.mpex;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import io.github.taowater.core.function.LambdaUtil;
 import io.github.taowater.core.function.SerBiFunction;
-import io.github.taowater.util.EmptyUtil;
+import io.github.taowater.core.util.EmptyUtil;
 import io.github.taowater.ztream.Any;
 import lombok.experimental.UtilityClass;
 import lombok.var;

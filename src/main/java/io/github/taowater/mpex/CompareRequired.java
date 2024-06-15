@@ -2,7 +2,7 @@ package io.github.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
-import io.github.taowater.util.EmptyUtil;
+import io.github.taowater.core.util.EmptyUtil;
 
 import java.util.Collection;
 

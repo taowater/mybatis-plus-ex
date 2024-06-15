@@ -1,19 +1,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.github.zistory</groupId>
+    <groupId>io.github.taowater</groupId>
     <artifactId>mybatis-plus-ex</artifactId>
     <version>0.0.1</version>
     <name>mybatis-plus-ex</name>
-
+    <description>mybatis-plus用法上的一些拓展</description>
+    <developers>
+        <developer>
+            <name>Zhu56</name>
+            <email>248771337@qq.com</email>
+        </developer>
+    </developers>
+    <url>https://github.com/taowater/mybatis-plus-ex</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>8</java.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
         <lombok.version>1.18.32</lombok.version>
-        <taol.version>0.0.1</taol.version>
-        <ztream.version>0.0.5</ztream.version>
+        <junit.version>5.11.0-M2</junit.version>
+        <cglib.version>3.3.0</cglib.version>
+        <hutool.version>6.0.0-M13</hutool.version>
+        <ztream.version>0.0.6</ztream.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
     </properties>
 
@@ -30,13 +42,123 @@
         </dependency>
         <dependency>
             <groupId>io.github.taowater</groupId>
-            <artifactId>taol-core</artifactId>
-            <version>${taol.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.taowater</groupId>
             <artifactId>ztream</artifactId>
             <version>${ztream.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/taowater/mybatis-plus-ex?tab=MIT-1-ov-file</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <tag>main</tag>
+        <url>https://github.com/taowater/mybatis-plus-ex</url>
+        <connection>scm:git:git@github.com:taowater/mybatis-plus-ex.git</connection>
+        <developerConnection>scm:git:git@github.com:taowater/mybatis-plus-ex.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
+            <!-- Javadoc工具 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- 解决控制台乱码 -->
+                    <additionalJOptions>-Xdoclint:none -J-Dfile.encoding=utf-8</additionalJOptions>
+                </configuration>
+            </plugin>
+            <!--生成源码jar包-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GPG -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <gpgArguments>
+                        <!--表示密码直接输入，不需要弹出密码框-->
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <!--                    <autoPublish>true</autoPublish>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
