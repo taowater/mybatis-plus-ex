@@ -1,7 +1,7 @@
-package io.github.taowater.mpex;
+package com.taowater.mpex;
 
 
-import io.github.taowater.core.util.EmptyUtil;
+import com.taowater.taol.core.util.EmptyUtil;
 
 /**
  * 自更新

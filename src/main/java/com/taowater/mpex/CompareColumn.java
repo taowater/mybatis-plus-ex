@@ -1,4 +1,4 @@
-package io.github.taowater.mpex;
+package com.taowater.mpex;
 
 /**
  * 字段比较

@@ -1,8 +1,8 @@
-package io.github.taowater.mpex;
+package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.github.taowater.ztream.Ztream;
+import com.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;
 import org.dromara.hutool.core.map.MapUtil;
 

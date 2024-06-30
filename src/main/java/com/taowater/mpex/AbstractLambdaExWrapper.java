@@ -1,4 +1,4 @@
-package io.github.taowater.mpex;
+package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;

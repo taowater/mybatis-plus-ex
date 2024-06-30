@@ -1,10 +1,10 @@
-package io.github.taowater.mpex;
+package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import io.github.taowater.core.function.LambdaUtil;
-import io.github.taowater.core.function.SerBiFunction;
-import io.github.taowater.core.util.EmptyUtil;
-import io.github.taowater.ztream.Any;
+import com.taowater.taol.core.function.LambdaUtil;
+import com.taowater.taol.core.function.SerBiFunction;
+import com.taowater.taol.core.util.EmptyUtil;
+import com.taowater.ztream.Any;
 import lombok.experimental.UtilityClass;
 import lombok.var;
 import org.dromara.hutool.core.reflect.TypeUtil;
