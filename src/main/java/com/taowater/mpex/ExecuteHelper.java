@@ -2,9 +2,9 @@ package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.taowater.taol.core.function.LambdaUtil;
-import com.taowater.taol.core.function.SerBiFunction;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
+import io.vavr.Function2;
 import lombok.experimental.UtilityClass;
 import lombok.var;
 import org.dromara.hutool.core.reflect.TypeUtil;
@@ -31,7 +31,7 @@ class ExecuteHelper {
      * @return {@link R} 业务查询结果
      */
     @SuppressWarnings("unchecked")
-    public static <T, M extends BaseMapper<T>, W extends Wrapper<T>, R> R execute(M mapper, Consumer<W> operator, SerBiFunction<M, W, R> fun, Function<Class<T>, W> wFun) {
+    public static <T, M extends BaseMapper<T>, W extends Wrapper<T>, R> R execute(M mapper, Consumer<W> operator, Function2<M, W, R> fun, Function<Class<T>, W> wFun) {
         if (EmptyUtil.isHadEmpty(mapper, operator, fun, wFun)) {
             return null;
         }

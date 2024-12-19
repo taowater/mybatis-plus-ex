@@ -2,7 +2,7 @@ package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.repository.IRepository;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
@@ -21,7 +21,7 @@ import java.util.function.Function;
  * @author 朱滔
  * @date 2022/11/20 02:23:15
  */
-public interface BaseService<P, M extends BaseMapper<P>> extends IService<P> {
+public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository<P> {
 
     @Override
     M getBaseMapper();

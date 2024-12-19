@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,22 @@ public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaU
             sqlSet.add(formatSqlMaybeWithParam(setSql, params));
         }
         return typedThis;
+    }
+
+    @Override
+    public LambdaUpdateExWrapper<T> setIncrBy(boolean condition, SFunction<T, ?> column, Number val) {
+        return maybeDo(condition, () -> {
+            String realColumn = columnToString(column);
+            sqlSet.add(String.format("%s=%s + %s", realColumn, realColumn, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val));
+        });
+    }
+
+    @Override
+    public LambdaUpdateExWrapper<T> setDecrBy(boolean condition, SFunction<T, ?> column, Number val) {
+        return maybeDo(condition, () -> {
+            String realColumn = columnToString(column);
+            sqlSet.add(String.format("%s=%s - %s", realColumn, realColumn, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val));
+        });
     }
 
     @Override

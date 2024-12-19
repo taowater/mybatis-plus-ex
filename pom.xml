@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.taowater</groupId>
     <artifactId>mybatis-plus-ex</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <name>mybatis-plus-ex</name>
     <description>mybatis-plus用法上的一些拓展</description>
     <developers>
@@ -21,12 +21,10 @@
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
-        <lombok.version>1.18.32</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <junit.version>5.11.0-M2</junit.version>
-        <cglib.version>3.3.0</cglib.version>
-        <hutool.version>6.0.0-M13</hutool.version>
-        <ztream.version>0.0.7</ztream.version>
-        <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <ztream.version>0.1.6</ztream.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
     </properties>
 
     <dependencies>
