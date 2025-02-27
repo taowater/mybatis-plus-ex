@@ -1,5 +1,6 @@
 package com.taowater.mpex;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,12 +28,31 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * 查询总记录数
      *
+     * @return {@link Long }
+     */
+    default Long selectCount() {
+        return this.selectCount((Wrapper<P>) null);
+    }
+
+    /**
+     * 查询总记录数
+     *
      * @param consumer 操作符
      * @return {@link Long}
      */
     default Long selectCount(Consumer<LambdaQueryExWrapper<P>> consumer) {
         var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
         return Any.of(result).orElse(0L);
+    }
+
+
+    /**
+     * 查询列表
+     *
+     * @return {@link List }<{@link P }>
+     */
+    default List<P> selectList() {
+        return this.selectList((Wrapper<P>) null);
     }
 
     /**
@@ -67,6 +87,15 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default List<P> selectLimit(Consumer<LambdaQueryExWrapper<P>> consumer, int limit) {
         return Any.of(selectPage(new Page<P>(1, limit).setSearchCount(false), consumer)).get(Page::getRecords);
+    }
+
+    /**
+     * 查询为流
+     *
+     * @return {@link Ztream }<{@link P }>
+     */
+    default Ztream<P> selectZtream() {
+        return Ztream.of(selectList());
     }
 
     /**

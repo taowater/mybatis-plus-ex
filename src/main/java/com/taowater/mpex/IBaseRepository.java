@@ -99,6 +99,15 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
     /**
      * 查询列表
      *
+     * @return {@link List}<{@link P}>
+     */
+    default List<P> list() {
+        return getBaseMapper().selectList();
+    }
+
+    /**
+     * 查询列表
+     *
      * @param consumer 处理流程
      * @return {@link List}<{@link P}>
      */
@@ -182,11 +191,29 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
     /**
      * 统计
      *
+     * @return long
+     */
+    default long count() {
+        return getBaseMapper().selectCount();
+    }
+
+    /**
+     * 统计
+     *
      * @param consumer 操作
      * @return long
      */
     default long count(Consumer<LambdaQueryExWrapper<P>> consumer) {
         return getBaseMapper().selectCount(consumer);
+    }
+
+    /**
+     * 查询结果为流
+     *
+     * @return {@link Ztream}<{@link P}>
+     */
+    default Ztream<P> ztream() {
+        return getBaseMapper().selectZtream();
     }
 
     /**
