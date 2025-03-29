@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;
-import org.dromara.hutool.core.map.MapUtil;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -23,14 +22,15 @@ class DefaultHelper {
     /**
      * 建立对应类型的默认值映射
      */
-    private static final Map<Predicate<Class<?>>, Supplier<Object>> MAP = MapUtil
-            .builder(new HashMap<Predicate<Class<?>>, Supplier<Object>>())
-            .put(List.class::isAssignableFrom, ArrayList::new)
-            .put(Set.class::isAssignableFrom, HashSet::new)
-            .put(Collection.class::isAssignableFrom, ArrayList::new)
-            .put(Map.class::isAssignableFrom, HashMap::new)
-            .put(IPage.class::isAssignableFrom, Page::new)
-            .build();
+    private static final Map<Predicate<Class<?>>, Supplier<Object>> MAP = new LinkedHashMap<>();
+
+    static {
+        MAP.put(List.class::isAssignableFrom, ArrayList::new);
+        MAP.put(Set.class::isAssignableFrom, HashSet::new);
+        MAP.put(Collection.class::isAssignableFrom, ArrayList::new);
+        MAP.put(Map.class::isAssignableFrom, HashMap::new);
+        MAP.put(IPage.class::isAssignableFrom, Page::new);
+    }
 
 
     public <T> T getValue(Class<T> clazz) {

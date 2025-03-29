@@ -2,13 +2,15 @@ package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.taowater.taol.core.function.LambdaUtil;
+import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import io.vavr.Function2;
 import lombok.experimental.UtilityClass;
 import lombok.var;
-import org.dromara.hutool.core.reflect.TypeUtil;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -20,6 +22,8 @@ import java.util.function.Function;
  */
 @UtilityClass
 class ExecuteHelper {
+
+    private final static Map<Class<?>, Class<?>> MAP = new ConcurrentHashMap<>();
 
     /**
      * mapper层执行快查处理
@@ -36,7 +40,7 @@ class ExecuteHelper {
             return null;
         }
         // 获得该mapper操作的实体类型
-        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(mapper.getClass(), 0);
+        Class<T> clazz = (Class<T>) MAP.computeIfAbsent(mapper.getClass(), c -> (Class<T>) TypeUtil.getTypeArgument(c, BaseMapper.class));
         // 获取wrapper对象
         W wrapper = wFun.apply(clazz);
         // 使用操作流程描述处理该wrapper得到最终查询的wrapper
