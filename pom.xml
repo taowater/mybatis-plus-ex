@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.taowater</groupId>
     <artifactId>mybatis-plus-ex</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <name>mybatis-plus-ex</name>
     <description>mybatis-plus用法上的一些拓展</description>
     <developers>
@@ -23,8 +23,7 @@
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
         <lombok.version>1.18.36</lombok.version>
         <junit.version>5.11.4</junit.version>
-        <taol.version>0.1.0</taol.version>
-        <ztream.version>0.1.8</ztream.version>
+        <ztream.version>0.1.9</ztream.version>
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
     </properties>
 
@@ -38,11 +37,6 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
             <version>${mybatis-plus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.taowater</groupId>
-            <artifactId>taol-core</artifactId>
-            <version>${taol.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.taowater</groupId>

@@ -1,11 +1,11 @@
 package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.taowater.taol.core.function.Function2;
 import com.taowater.taol.core.function.LambdaUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
-import io.vavr.Function2;
 import lombok.experimental.UtilityClass;
 import lombok.var;
 
