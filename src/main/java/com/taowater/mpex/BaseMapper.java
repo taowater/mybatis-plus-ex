@@ -2,6 +2,7 @@ package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.taowater.taol.core.convert.ConvertUtil;
@@ -9,6 +10,7 @@ import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
 import lombok.var;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 
 import java.io.Serializable;
@@ -135,8 +137,17 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return boolean
      */
     default boolean exists(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        return Objects.nonNull(this.selectOne(consumer));
+        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectExists, LambdaQueryExWrapper::new);
+        return Objects.nonNull(result);
     }
+
+    /**
+     * 判断数据是否存在
+     *
+     * @param queryWrapper 查询包装器
+     * @return {@link Integer }
+     */
+    Integer selectExists(@Param(Constants.WRAPPER) Wrapper<P> queryWrapper);
 
     /**
      * 查询一个
