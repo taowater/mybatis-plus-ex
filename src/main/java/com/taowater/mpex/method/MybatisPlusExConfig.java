@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.method;
 
 import org.springframework.context.annotation.Bean;
 

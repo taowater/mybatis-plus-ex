@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.taowater.mpex;
+package com.taowater.mpex.method;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,9 +22,13 @@ import lombok.Getter;
 @AllArgsConstructor
 enum SqlExMethod {
     /**
-     * 插入
+     * 判断条件数据是否存在
      */
     SELECT_EXISTS("selectExists", "判断是否存在", "<script>SELECT 1 WHERE EXISTS (SELECT 1 FROM %s %s)\n</script>"),
+    /**
+     * 限制条数选择
+     */
+    SELECT_LIMIT("selectLimit", "限制条数选择", "<script>%s SELECT %s FROM %s %s %s %s %s\n</script>"),
 
     ;
     private final String method;

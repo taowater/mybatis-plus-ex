@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.method;
 
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
@@ -13,7 +13,7 @@ import org.apache.ibatis.mapping.SqlSource;
  */
 class SelectExists extends AbstractMethod {
 
-    protected SelectExists() {
+    public SelectExists() {
         super(SqlExMethod.SELECT_EXISTS.getMethod());
     }
 

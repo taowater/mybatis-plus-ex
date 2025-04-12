@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.method;
 
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
@@ -8,7 +8,7 @@ import org.apache.ibatis.session.Configuration;
 
 import java.util.List;
 
-class CustomSqlInjector extends DefaultSqlInjector {
+public class CustomSqlInjector extends DefaultSqlInjector {
 
     @Override
     public List<AbstractMethod> getMethodList(Configuration configuration, Class<?> mapperClass, TableInfo tableInfo) {
@@ -16,6 +16,7 @@ class CustomSqlInjector extends DefaultSqlInjector {
         // 2. 添加自定义方法
         return Ztream.of(methodList)
                 .append(new SelectExists())
+                .append(new SelectLimit())
                 .toList();
     }
 }

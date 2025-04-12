@@ -1,17 +1,22 @@
 package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.taowater.taol.core.convert.ConvertUtil;
+import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
 import lombok.var;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.TooManyResultsException;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.aop.framework.AopProxyUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -88,8 +93,10 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return {@link List}<{@link P}>
      */
     default List<P> selectLimit(Consumer<LambdaQueryExWrapper<P>> consumer, int limit) {
-        return Any.of(selectPage(new Page<P>(1, limit).setSearchCount(false), consumer)).get(Page::getRecords);
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectLimit(w, limit), LambdaQueryExWrapper::new);
     }
+
+    List<P> selectLimit(@Param(Constants.WRAPPER) Wrapper<P> wrapper, @Param("limit") int limit);
 
     /**
      * 查询为流
@@ -276,5 +283,20 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default <K extends Serializable, A> Map<K, A> mapBy(SFunction<P, K> field, Collection<K> values, Class<A> clazzV) {
         return mapBy(field, values, e -> ConvertUtil.convert(e, clazzV));
+    }
+
+    default <D> List<D> selectList(Wrapper<P> wrapper, Class<D> clazz) {
+        // 获取原始 Mapper 接口 Class（解决代理问题）
+        Class<P> entityClazz = (Class<P>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
+        Class<? extends BaseMapper<P>> mapperInterface = (Class<? extends BaseMapper<P>>) AopProxyUtils.proxiedUserInterfaces(this)[0];
+        SqlSession sqlSession = SqlHelper.sqlSession(entityClazz);
+        // 从缓存获取或构建 MappedStatement
+        String msId = ExecuteHelper.buildDynamicMappedStatement(sqlSession.getConfiguration(), SqlMethod.SELECT_LIST, clazz, mapperInterface);
+
+        return sqlSession.selectList(msId, Collections.singletonMap(Constants.WRAPPER, wrapper));
+    }
+
+    default <D> List<D> selectList(Consumer<LambdaQueryExWrapper<P>> consumer, Class<D> clazz) {
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectList(w, clazz), LambdaQueryExWrapper::new);
     }
 }
