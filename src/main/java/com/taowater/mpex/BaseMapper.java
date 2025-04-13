@@ -12,11 +12,9 @@ import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
-import lombok.var;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.aop.framework.AopProxyUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -27,7 +25,6 @@ import java.util.function.Function;
  * 基础mapper
  *
  * @author zhu56
- * @date 2023/08/12 02:40
  */
 @SuppressWarnings("unchecked")
 public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<P> {
@@ -48,7 +45,7 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return {@link Long}
      */
     default Long selectCount(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
+        Long result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
         return Any.of(result).orElse(0L);
     }
 
@@ -69,7 +66,7 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return {@link List}<{@link P}>
      */
     default List<P> selectList(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectList, LambdaQueryExWrapper::new);
+        List<P> result = ExecuteHelper.execute(this, consumer, BaseMapper::selectList, LambdaQueryExWrapper::new);
         return Any.of(result).orElse(new ArrayList<>(0));
     }
 
@@ -81,7 +78,7 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return {@link Page}<{@link P}>
      */
     default <E extends IPage<P>> E selectPage(E page, Consumer<LambdaQueryExWrapper<P>> consumer) {
-        var result = ExecuteHelper.execute(this, consumer, (m, w) -> m.selectPage(page, w), LambdaQueryExWrapper::new);
+        E result = ExecuteHelper.execute(this, consumer, (m, w) -> m.selectPage(page, w), LambdaQueryExWrapper::new);
         return Any.of(result).orElse(page);
     }
 
@@ -144,7 +141,7 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return boolean
      */
     default boolean exists(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        var result = ExecuteHelper.execute(this, consumer, BaseMapper::selectExists, LambdaQueryExWrapper::new);
+        Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::selectExists, LambdaQueryExWrapper::new);
         return Objects.nonNull(result);
     }
 
@@ -203,7 +200,7 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return int 删除数量
      */
     default int delete(Consumer<LambdaQueryExWrapper<P>> consumer) {
-        var result = ExecuteHelper.execute(this, consumer, BaseMapper::delete, LambdaQueryExWrapper::new);
+        Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::delete, LambdaQueryExWrapper::new);
         return Any.of(result).orElse(0);
     }
 
@@ -288,7 +285,8 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
     default <D> List<D> selectList(Wrapper<P> wrapper, Class<D> clazz) {
         // 获取原始 Mapper 接口 Class（解决代理问题）
         Class<P> entityClazz = (Class<P>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
-        Class<? extends BaseMapper<P>> mapperInterface = (Class<? extends BaseMapper<P>>) AopProxyUtils.proxiedUserInterfaces(this)[0];
+
+        Class<? extends BaseMapper<P>> mapperInterface = (Class<? extends BaseMapper<P>>) Ztream.of(this.getClass().getInterfaces()).filter(BaseMapper.class::isAssignableFrom).getFirst();
         SqlSession sqlSession = SqlHelper.sqlSession(entityClazz);
         // 从缓存获取或构建 MappedStatement
         String msId = ExecuteHelper.buildDynamicMappedStatement(sqlSession.getConfiguration(), SqlMethod.SELECT_LIST, clazz, mapperInterface);

@@ -11,6 +11,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * 限制条数选择
@@ -20,8 +21,15 @@ import java.sql.SQLException;
  */
 class SelectLimit extends AbstractMethod {
 
+    private DbType dbType;
+
     public SelectLimit() {
         super(SqlExMethod.SELECT_LIMIT.getMethod());
+    }
+
+    public SelectLimit(DbType dbType) {
+        super(SqlExMethod.SELECT_LIMIT.getMethod());
+        this.dbType = dbType;
     }
 
     @Override
@@ -70,6 +78,9 @@ class SelectLimit extends AbstractMethod {
      * 获取当前数据库类型（正确方式）
      */
     private DbType getDbType() {
+        if (Objects.nonNull(this.dbType)) {
+            return this.dbType;
+        }
         Connection connection = null;
         try {
             DataSource dataSource = configuration.getEnvironment().getDataSource();
