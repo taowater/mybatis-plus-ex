@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.taowater.mpex.wrapper.interfaces.UpdateSelf;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;

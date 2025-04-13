@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.taowater.mpex.wrapper.LambdaQueryExWrapper;
+import com.taowater.mpex.wrapper.LambdaUpdateExWrapper;
 import com.taowater.taol.core.convert.ConvertUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;

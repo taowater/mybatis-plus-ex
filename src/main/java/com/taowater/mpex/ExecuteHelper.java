@@ -3,6 +3,7 @@ package com.taowater.mpex;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.taowater.mpex.wrapper.AbstractLambdaExWrapper;
 import com.taowater.taol.core.function.Function2;
 import com.taowater.taol.core.function.LambdaUtil;
 import com.taowater.taol.core.reflect.TypeUtil;

@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper.interfaces;
 
 import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
@@ -14,7 +14,7 @@ import java.util.Collection;
  * @author zhu56
  * @date 2023/09/12 10:48:16
  */
-interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
+public interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
 
     void setNeedQuery(Boolean flag);
 

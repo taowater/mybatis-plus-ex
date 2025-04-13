@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper.interfaces;
 
 import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author zhu56
  * @date 2023/09/02 01:38
  */
-interface CompareIfNotEmpty<W, R> extends Compare<W, R>, Func<W, R> {
+public interface CompareIfNotEmpty<W, R> extends Compare<W, R>, Func<W, R> {
 
     default W inX(R column, Collection<?> coll) {
         return in(EmptyUtil.isNotEmpty(coll), column, coll);

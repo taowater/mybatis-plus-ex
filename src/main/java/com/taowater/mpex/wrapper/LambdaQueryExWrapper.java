@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

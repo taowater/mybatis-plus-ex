@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper.interfaces;
 
 /**
  * 字段比较
@@ -6,7 +6,7 @@ package com.taowater.mpex;
  * @author zhu56
  * @date 2023/09/04 23:31
  */
-interface CompareColumn<W, R> {
+public interface CompareColumn<W, R> {
 
     /**
      * 字段1 = 字段2

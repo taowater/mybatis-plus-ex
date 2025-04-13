@@ -1,8 +1,11 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.taowater.mpex.wrapper.interfaces.CompareColumn;
+import com.taowater.mpex.wrapper.interfaces.CompareIfNotEmpty;
+import com.taowater.mpex.wrapper.interfaces.CompareRequired;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +17,7 @@ import lombok.Setter;
  * @date 2023/09/02 01:11
  */
 @Getter
-abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
+public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
         extends AbstractLambdaWrapper<T, W>
         implements CompareRequired<W, SFunction<T, ?>>, CompareIfNotEmpty<W, SFunction<T, ?>>, CompareColumn<W, SFunction<T, ?>> {
 

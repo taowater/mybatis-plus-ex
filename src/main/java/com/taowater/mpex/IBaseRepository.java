@@ -3,6 +3,8 @@ package com.taowater.mpex;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.repository.IRepository;
+import com.taowater.mpex.wrapper.LambdaQueryExWrapper;
+import com.taowater.mpex.wrapper.LambdaUpdateExWrapper;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;

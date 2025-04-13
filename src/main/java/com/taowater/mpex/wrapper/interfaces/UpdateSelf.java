@@ -1,4 +1,4 @@
-package com.taowater.mpex;
+package com.taowater.mpex.wrapper.interfaces;
 
 
 import com.taowater.taol.core.util.EmptyUtil;
@@ -9,7 +9,7 @@ import com.taowater.taol.core.util.EmptyUtil;
  * @author zhu56
  * @date 2023/09/04 22:33
  */
-interface UpdateSelf<W, R> {
+public interface UpdateSelf<W, R> {
 
 
     /**
