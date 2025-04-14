@@ -180,17 +180,6 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
     }
 
     /**
-     * 查询前n个
-     *
-     * @param consumer 操作
-     * @param limit    限制
-     * @return {@link List}<{@link P}>
-     */
-    default List<P> limit(Consumer<LambdaQueryExWrapper<P>> consumer, int limit) {
-        return getBaseMapper().selectLimit(consumer, limit);
-    }
-
-    /**
      * 统计
      *
      * @return long

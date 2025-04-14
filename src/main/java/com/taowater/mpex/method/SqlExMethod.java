@@ -18,6 +18,12 @@ package com.taowater.mpex.method;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 拓展方法
+ *
+ * @author zhu56
+ * @date 2025/04/14 20:47
+ */
 @Getter
 @AllArgsConstructor
 enum SqlExMethod {
@@ -26,9 +32,9 @@ enum SqlExMethod {
      */
     SELECT_EXISTS("selectExists", "判断是否存在", "<script>SELECT 1 WHERE EXISTS (SELECT 1 FROM %s %s)\n</script>"),
     /**
-     * 限制条数选择
+     * 拓展limit的选择
      */
-    SELECT_LIMIT("selectLimit", "限制条数选择", "<script>%s SELECT %s FROM %s %s %s %s %s\n</script>"),
+    SELECT_LIST("selectList", "查询满足条件所有数据", "<script>%s SELECT %s FROM %s %s %s %s %s\n</script>"),
 
     ;
     private final String method;

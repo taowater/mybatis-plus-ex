@@ -85,19 +85,6 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
     }
 
     /**
-     * 查询前n个
-     *
-     * @param consumer 操作
-     * @param limit    限制
-     * @return {@link List}<{@link P}>
-     */
-    default List<P> selectLimit(Consumer<LambdaQueryExWrapper<P>> consumer, int limit) {
-        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectLimit(w, limit), LambdaQueryExWrapper::new);
-    }
-
-    List<P> selectLimit(@Param(Constants.WRAPPER) Wrapper<P> wrapper, @Param("limit") int limit);
-
-    /**
      * 查询为流
      *
      * @return {@link Ztream }<{@link P }>
@@ -163,7 +150,8 @@ public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return {@link P}
      */
     default P selectOne(Consumer<LambdaQueryExWrapper<P>> consumer, boolean throwEx) {
-        List<P> list = this.selectLimit(consumer, throwEx ? 2 : 1);
+        consumer = consumer.andThen(w -> w.limit(throwEx ? 2 : 1));
+        List<P> list = this.selectList(consumer);
         if (EmptyUtil.isEmpty(list)) {
             return null;
         }

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,9 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
         implements Query<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
 
     private SharedString sqlSelect = new SharedString();
+
+    @Getter
+    private Integer limit;
 
     public LambdaQueryExWrapper() {
         this((T) null);
@@ -91,5 +95,14 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
     public void clear() {
         super.clear();
         sqlSelect.toNull();
+    }
+
+
+    /**
+     * @param limit 限制条数
+     */
+    public LambdaQueryExWrapper<T> limit(int limit) {
+        this.limit = limit;
+        return this;
     }
 }

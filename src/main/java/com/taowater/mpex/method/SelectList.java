@@ -14,21 +14,22 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 /**
- * 限制条数选择
+ * 查询满足条件所有数据
+ * 支持limit
  *
  * @author zhu56
  * @date 2025/04/10 01:59
  */
-class SelectLimit extends AbstractMethod {
+class SelectList extends AbstractMethod {
 
     private DbType dbType;
 
-    public SelectLimit() {
-        super(SqlExMethod.SELECT_LIMIT.getMethod());
+    public SelectList() {
+        super(SqlExMethod.SELECT_LIST.getMethod());
     }
 
-    public SelectLimit(DbType dbType) {
-        super(SqlExMethod.SELECT_LIMIT.getMethod());
+    public SelectList(DbType dbType) {
+        super(SqlExMethod.SELECT_LIST.getMethod());
         this.dbType = dbType;
     }
 
@@ -59,19 +60,19 @@ class SelectLimit extends AbstractMethod {
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",
                         sqlFirst, sqlLimit, selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
             default:
-                return String.format(SqlExMethod.SELECT_LIMIT.getSql(),
+                return String.format(SqlExMethod.SELECT_LIST.getSql(),
                         sqlFirst, selectColumns, tableInfo.getTableName(), whereClause, sqlOrderBy, sqlLimit, sqlComment);
         }
     }
 
     protected String sqlLimit(DbType dbType) {
-        String limitFormat = "LIMIT ${limit}";
+        String limitFormat = "LIMIT ${ew.limit}";
         if (dbType.equals(DbType.SQL_SERVER)) {
-            limitFormat = "TOP ${limit}";
+            limitFormat = "TOP ${ew.limit}";
         } else if (dbType.equals(DbType.DB2)) {
-            limitFormat = "FETCH FIRST ${limit} ROWS ONLY";
+            limitFormat = "FETCH FIRST ${ew.limit} ROWS ONLY";
         }
-        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, "limit != null", true);
+        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, String.format("%s != null and %s != null", WRAPPER, "ew.limit"), true);
     }
 
     /**
