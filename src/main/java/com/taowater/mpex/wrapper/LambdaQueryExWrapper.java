@@ -20,9 +20,9 @@ import java.util.function.Predicate;
  * 拓展Lambda查询wrapper
  *
  * @author zhu56
- * @date 2023/09/02 00:46
  * @see LambdaQueryWrapper
  */
+@SuppressWarnings("unused")
 public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
         implements Query<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
 
@@ -101,6 +101,7 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
     /**
      * @param limit 限制条数
      */
+    @SuppressWarnings("UnusedReturnValue")
     public LambdaQueryExWrapper<T> limit(int limit) {
         this.limit = limit;
         return this;

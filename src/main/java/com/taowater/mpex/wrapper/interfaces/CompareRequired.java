@@ -12,8 +12,8 @@ import java.util.Collection;
  * 原有方法名后加R
  *
  * @author zhu56
- * @date 2023/09/12 10:48:16
  */
+@SuppressWarnings("unused")
 public interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
 
     void setNeedQuery(Boolean flag);

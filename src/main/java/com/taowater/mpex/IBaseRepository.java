@@ -21,8 +21,8 @@ import java.util.function.Function;
  * 快速查询
  *
  * @author 朱滔
- * @date 2022/11/20 02:23:15
  */
+@SuppressWarnings("unused")
 public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository<P> {
 
     @Override
@@ -101,15 +101,6 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
     /**
      * 查询列表
      *
-     * @return {@link List}<{@link P}>
-     */
-    default List<P> list() {
-        return getBaseMapper().selectList();
-    }
-
-    /**
-     * 查询列表
-     *
      * @param consumer 处理流程
      * @return {@link List}<{@link P}>
      */
@@ -177,15 +168,6 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      */
     default boolean update(Consumer<LambdaUpdateExWrapper<P>> consumer) {
         return getBaseMapper().update(consumer) > 0;
-    }
-
-    /**
-     * 统计
-     *
-     * @return long
-     */
-    default long count() {
-        return getBaseMapper().selectCount();
     }
 
     /**

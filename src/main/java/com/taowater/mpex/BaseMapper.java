@@ -28,7 +28,7 @@ import java.util.function.Function;
  *
  * @author zhu56
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public interface BaseMapper<P> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<P> {
 
     /**

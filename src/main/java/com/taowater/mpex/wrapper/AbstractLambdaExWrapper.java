@@ -14,8 +14,8 @@ import lombok.Setter;
  * 由于直接继承LambdaWrapper会有断链的问题，所以选择直接抄一遍LambdaWrapper作为新的中间层
  *
  * @author zhu56
- * @date 2023/09/02 01:11
  */
+@Setter
 @Getter
 public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
         extends AbstractLambdaWrapper<T, W>
@@ -24,7 +24,6 @@ public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper
     /**
      * 是否需要查询
      */
-    @Setter
     private Boolean needQuery;
 
     protected final W addConditionCol(boolean condition, SFunction<T, ?> column1, SqlKeyword sqlKeyword, SFunction<T, ?> column2) {

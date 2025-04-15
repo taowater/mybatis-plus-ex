@@ -26,7 +26,6 @@ import java.util.function.Function;
  * 执行帮助程序
  *
  * @author zhu56
- * @date 2024/06/14 01:29
  */
 @UtilityClass
 class ExecuteHelper {
@@ -71,7 +70,7 @@ class ExecuteHelper {
     /**
      * 构建动态 MappedStatement (带缓存自动生效)
      */
-    public static <T, D, M extends BaseMapper<?>> String buildDynamicMappedStatement(Configuration config, SqlMethod sqlMethod, Class<D> clazz, Class<M> mapperClazz) {
+    public static <D, M extends BaseMapper<?>> String buildDynamicMappedStatement(Configuration config, SqlMethod sqlMethod, Class<D> clazz, Class<M> mapperClazz) {
         // 获取BaseMapper的原始selectList语句
         String originalMsId = SqlHelper.getSqlStatement(mapperClazz, sqlMethod);
         String dynamicMsId = originalMsId + "_" + clazz.getName();

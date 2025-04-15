@@ -11,8 +11,8 @@ import java.util.Collection;
  * 原有方法名后加X
  *
  * @author zhu56
- * @date 2023/09/02 01:38
  */
+@SuppressWarnings("unused")
 public interface CompareIfNotEmpty<W, R> extends Compare<W, R>, Func<W, R> {
 
     default W inX(R column, Collection<?> coll) {

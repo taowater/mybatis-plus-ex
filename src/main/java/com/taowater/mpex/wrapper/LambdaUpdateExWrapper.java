@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 拓展Lambda更新wrapper
  *
  * @author zhu56
- * @date 2023/09/02 00:46
  * @see LambdaUpdateWrapper
  */
+@SuppressWarnings("unused")
 public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
         implements Update<LambdaUpdateExWrapper<T>, SFunction<T, ?>>, UpdateSelf<LambdaUpdateExWrapper<T>, SFunction<T, ?>> {
 

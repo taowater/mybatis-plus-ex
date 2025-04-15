@@ -4,8 +4,8 @@ package com.taowater.mpex.wrapper.interfaces;
  * 字段比较
  *
  * @author zhu56
- * @date 2023/09/04 23:31
  */
+@SuppressWarnings("unused")
 public interface CompareColumn<W, R> {
 
     /**

@@ -18,8 +18,8 @@ import java.util.Objects;
  * 支持limit
  *
  * @author zhu56
- * @date 2025/04/10 01:59
  */
+@SuppressWarnings("unused")
 class SelectList extends AbstractMethod {
 
     private DbType dbType;
@@ -50,12 +50,10 @@ class SelectList extends AbstractMethod {
         String sqlLimit = sqlLimit(dbType);
         String sqlComment = sqlComment();
         switch (dbType) {
-            // Oracle 使用 ROWNUM
             case ORACLE:
             case ORACLE_12C:
                 return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${limit}\n</script>", sqlFirst,
                         selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
-            // SQL Server 使用 TOP
             case SQL_SERVER:
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",
                         sqlFirst, sqlLimit, selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);

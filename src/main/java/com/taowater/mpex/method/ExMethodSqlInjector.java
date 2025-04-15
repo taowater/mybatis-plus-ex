@@ -10,7 +10,11 @@ import org.apache.ibatis.session.Configuration;
 
 import java.util.List;
 
+/**
+ * @author zhu56
+ */
 @NoArgsConstructor
+@SuppressWarnings("unused")
 public class ExMethodSqlInjector extends DefaultSqlInjector {
 
     private DbType dbType;

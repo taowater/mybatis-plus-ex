@@ -7,8 +7,8 @@ import com.taowater.taol.core.util.EmptyUtil;
  * 自更新
  *
  * @author zhu56
- * @date 2023/09/04 22:33
  */
+@SuppressWarnings("unused")
 public interface UpdateSelf<W, R> {
 
 
