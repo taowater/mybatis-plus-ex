@@ -15,8 +15,6 @@
 	</a>
 </p>
 
-[![Star History Chart](https://api.star-history.com/svg?repos=taowater/mybatis-plus-ex&type=Date)](https://star-history.com/#taowater/mybatis-plus-ex&Date)
-
 对Mybatis-Plus用法上的一些拓展
 
 ### 🍊Maven
@@ -29,3 +27,5 @@
     <version>LATEST</version>
 </dependency>
 ```
+
+[![Star History Chart](https://api.star-history.com/svg?repos=taowater/mybatis-plus-ex&type=Date)](https://star-history.com/#taowater/mybatis-plus-ex&Date)
