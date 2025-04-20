@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.taowater</groupId>
     <artifactId>mybatis-plus-ex</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>mybatis-plus-ex</name>
     <description>mybatis-plus用法上的一些拓展</description>
     <developers>
@@ -24,6 +24,7 @@
         <lombok.version>1.18.38</lombok.version>
         <junit.version>5.11.4</junit.version>
         <ztream.version>0.1.9</ztream.version>
+        <spring.version>5.3.39</spring.version>
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
     </properties>
 
@@ -31,7 +32,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
             <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.8.37</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -42,6 +49,31 @@
             <groupId>io.github.taowater</groupId>
             <artifactId>ztream</artifactId>
             <version>${ztream.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.17.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.1.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
         <dependency>

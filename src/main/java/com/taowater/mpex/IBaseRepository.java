@@ -2,7 +2,7 @@ package com.taowater.mpex;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.repository.IRepository;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.taowater.mpex.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpex.wrapper.LambdaUpdateExWrapper;
 import com.taowater.taol.core.util.EmptyUtil;
@@ -23,19 +23,19 @@ import java.util.function.Function;
  * @author 朱滔
  */
 @SuppressWarnings("unused")
-public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository<P> {
+public interface IBaseRepository<T> extends IService<T> {
 
     @Override
-    M getBaseMapper();
+    BaseMapper<T> getBaseMapper();
 
     /**
      * 单属性等值匹配查询列表
      *
      * @param field 属性
      * @param value 值
-     * @return {@link List}<{@link P}>
+     * @return {@link List}<{@link T}>
      */
-    default <V extends Serializable> List<P> list(SFunction<P, V> field, V value) {
+    default <V extends Serializable> List<T> list(SFunction<T, V> field, V value) {
         if (EmptyUtil.isHadEmpty(field, value)) {
             return new ArrayList<>(0);
         }
@@ -47,9 +47,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      *
      * @param field 属性
      * @param c     集合
-     * @return {@link List}<{@link P}>
+     * @return {@link List}<{@link T}>
      */
-    default <V extends Serializable> List<P> list(SFunction<P, V> field, Collection<V> c) {
+    default <V extends Serializable> List<T> list(SFunction<T, V> field, Collection<V> c) {
         if (EmptyUtil.isHadEmpty(field, c)) {
             return new ArrayList<>(0);
         }
@@ -61,9 +61,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      *
      * @param field 属性
      * @param value 值
-     * @return {@link P}
+     * @return {@link T}
      */
-    default <V extends Serializable> P getOne(SFunction<P, V> field, V value) {
+    default <V extends Serializable> T getOne(SFunction<T, V> field, V value) {
         if (EmptyUtil.isHadEmpty(field, value)) {
             return null;
         }
@@ -77,7 +77,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param value 值
      * @return boolean
      */
-    default <V extends Serializable> boolean remove(SFunction<P, V> field, V value) {
+    default <V extends Serializable> boolean remove(SFunction<T, V> field, V value) {
         if (EmptyUtil.isHadEmpty(field, value)) {
             return false;
         }
@@ -91,7 +91,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param c     集合
      * @return boolean
      */
-    default <V extends Serializable> boolean remove(SFunction<P, V> field, Collection<V> c) {
+    default <V extends Serializable> boolean remove(SFunction<T, V> field, Collection<V> c) {
         if (EmptyUtil.isHadEmpty(field, c)) {
             return false;
         }
@@ -102,9 +102,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * 查询列表
      *
      * @param consumer 处理流程
-     * @return {@link List}<{@link P}>
+     * @return {@link List}<{@link T}>
      */
-    default List<P> list(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default List<T> list(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectList(consumer);
     }
 
@@ -115,7 +115,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param consumer 处理流程
      * @return {@link E}
      */
-    default <E extends IPage<P>> E page(E page, Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default <E extends IPage<T>> E page(E page, Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectPage(page, consumer);
     }
 
@@ -123,9 +123,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * 获取一个
      *
      * @param consumer 处理流程
-     * @return {@link P}
+     * @return {@link T}
      */
-    default P getOne(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default T getOne(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectOne(consumer);
     }
 
@@ -133,9 +133,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * 获取一个，结果用Any包装
      *
      * @param consumer 处理流程
-     * @return {@link Any}<{@link P}>
+     * @return {@link Any}<{@link T}>
      */
-    default Any<P> getOneX(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default Any<T> getOneX(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectOneX(consumer);
     }
 
@@ -144,9 +144,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      *
      * @param consumer 处理流程
      * @param throwEx  多个结果是否抛出异常
-     * @return {@link P}
+     * @return {@link T}
      */
-    default P getOne(Consumer<LambdaQueryExWrapper<P>> consumer, boolean throwEx) {
+    default T getOne(Consumer<LambdaQueryExWrapper<T>> consumer, boolean throwEx) {
         return getBaseMapper().selectOne(consumer, throwEx);
     }
 
@@ -156,7 +156,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param consumer 操作符
      * @return boolean
      */
-    default boolean remove(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default boolean remove(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().delete(consumer) > 0;
     }
 
@@ -166,7 +166,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param consumer 操作符
      * @return boolean
      */
-    default boolean update(Consumer<LambdaUpdateExWrapper<P>> consumer) {
+    default boolean update(Consumer<LambdaUpdateExWrapper<T>> consumer) {
         return getBaseMapper().update(consumer) > 0;
     }
 
@@ -176,16 +176,16 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param consumer 操作
      * @return long
      */
-    default long count(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default long count(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectCount(consumer);
     }
 
     /**
      * 查询结果为流
      *
-     * @return {@link Ztream}<{@link P}>
+     * @return {@link Ztream}<{@link T}>
      */
-    default Ztream<P> ztream() {
+    default Ztream<T> ztream() {
         return getBaseMapper().selectZtream();
     }
 
@@ -193,9 +193,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * 查询结果为流
      *
      * @param consumer 处理流程
-     * @return {@link Ztream}<{@link P}>
+     * @return {@link Ztream}<{@link T}>
      */
-    default Ztream<P> ztream(Consumer<LambdaQueryExWrapper<P>> consumer) {
+    default Ztream<T> ztream(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return getBaseMapper().selectZtream(consumer);
     }
 
@@ -204,9 +204,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      *
      * @param field  属性
      * @param values 值集合
-     * @return {@link Map}<{@link K}, {@link List}<{@link P}>>
+     * @return {@link Map}<{@link K}, {@link List}<{@link T}>>
      */
-    default <K extends Serializable> Map<K, List<P>> group(SFunction<P, K> field, Collection<K> values) {
+    default <K extends Serializable> Map<K, List<T>> group(SFunction<T, K> field, Collection<K> values) {
         return getBaseMapper().groupBy(field, values);
     }
 
@@ -218,7 +218,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param funV   分组值处理方法
      * @return {@link Map}<{@link K}, {@link List}<{@link A}>>
      */
-    default <K extends Serializable, A> Map<K, List<A>> group(SFunction<P, K> field, Collection<K> values, Function<P, A> funV) {
+    default <K extends Serializable, A> Map<K, List<A>> group(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
         return getBaseMapper().groupBy(field, values, funV);
     }
 
@@ -230,7 +230,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param clazzV 分组值转换类型
      * @return {@link Map}<{@link K}, {@link List}<{@link A}>>
      */
-    default <K extends Serializable, A> Map<K, List<A>> group(SFunction<P, K> field, Collection<K> values, Class<A> clazzV) {
+    default <K extends Serializable, A> Map<K, List<A>> group(SFunction<T, K> field, Collection<K> values, Class<A> clazzV) {
         return getBaseMapper().groupBy(field, values, clazzV);
     }
 
@@ -240,9 +240,9 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      *
      * @param field  属性
      * @param values 值集合
-     * @return {@link Map}<{@link K}, {@link P}>
+     * @return {@link Map}<{@link K}, {@link T}>
      */
-    default <K extends Serializable> Map<K, P> map(SFunction<P, K> field, Collection<K> values) {
+    default <K extends Serializable> Map<K, T> map(SFunction<T, K> field, Collection<K> values) {
         return getBaseMapper().mapBy(field, values);
     }
 
@@ -255,7 +255,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param funV   值处理方法
      * @return {@link Map}<{@link K}, {@link A}>
      */
-    default <K extends Serializable, A> Map<K, A> map(SFunction<P, K> field, Collection<K> values, Function<P, A> funV) {
+    default <K extends Serializable, A> Map<K, A> map(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
         return getBaseMapper().mapBy(field, values, funV);
     }
 
@@ -267,7 +267,7 @@ public interface IBaseRepository<M extends BaseMapper<P>, P> extends IRepository
      * @param clazzV 值转换类型
      * @return {@link Map}<{@link K}, {@link A}>
      */
-    default <K extends Serializable, A> Map<K, A> map(SFunction<P, K> field, Collection<K> values, Class<A> clazzV) {
+    default <K extends Serializable, A> Map<K, A> map(SFunction<T, K> field, Collection<K> values, Class<A> clazzV) {
         return getBaseMapper().mapBy(field, values, clazzV);
     }
 }
