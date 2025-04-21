@@ -62,8 +62,13 @@ public class DynamicCrudScannerRegistrar implements ImportBeanDefinitionRegistra
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
         AnnotationAttributes dynamicAttrs = AnnotationAttributes
-                .fromMap(importingClassMetadata.getAnnotationAttributes(EnableDynamic.class.getName()));
+                .fromMap(importingClassMetadata.getAnnotationAttributes(EntityScan.class.getName()));
 
+        registerBeanDefinitions(importingClassMetadata, dynamicAttrs, registry, generateBaseBeanName(importingClassMetadata, 0));
+
+    }
+
+    void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, AnnotationAttributes dynamicAttrs, BeanDefinitionRegistry registry, String beanName) {
         if (dynamicAttrs == null) {
             return;
         }
@@ -108,11 +113,38 @@ public class DynamicCrudScannerRegistrar implements ImportBeanDefinitionRegistra
             }
         }
         builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-
-        registry.registerBeanDefinition(configurerClazz.getName(), builder.getBeanDefinition());
+        registry.registerBeanDefinition(beanName, builder.getBeanDefinition());
     }
 
     private static String getDefaultBasePackage(AnnotationMetadata importingClassMetadata) {
         return ClassUtils.getPackageName(importingClassMetadata.getClassName());
+    }
+
+
+    private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
+        return importingClassMetadata.getClassName() + "#" + DynamicCrudScannerRegistrar.class.getSimpleName() + "#" + index;
+    }
+
+    /**
+     * A {@link DynamicCrudScannerRegistrar} for {@link EntityScans}.
+     *
+     * @since 2.0.0
+     */
+    static class RepeatingRegistrar extends DynamicCrudScannerRegistrar {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+            AnnotationAttributes mapperScansAttrs = AnnotationAttributes
+                    .fromMap(importingClassMetadata.getAnnotationAttributes(EntityScans.class.getName()));
+            if (mapperScansAttrs != null) {
+                AnnotationAttributes[] annotations = mapperScansAttrs.getAnnotationArray("value");
+                for (int i = 0; i < annotations.length; i++) {
+                    registerBeanDefinitions(importingClassMetadata, annotations[i], registry,
+                            generateBaseBeanName(importingClassMetadata, i));
+                }
+            }
+        }
     }
 }

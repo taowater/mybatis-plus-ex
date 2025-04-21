@@ -8,6 +8,8 @@ import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.Tuple;
 import com.taowater.ztream.Ztream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -44,7 +46,7 @@ import java.util.*;
  * @see ClassPathMapperScanner
  */
 public class DynamicCrudClassPathScanner extends ClassPathBeanDefinitionScanner {
-
+    protected final Log logger = LogFactory.getLog(getClass());
     private final Class<?> mapperClazz = DynamicMapper.class;
     private final Class<?> repositoryClass = DynamicRepository.class;
 
@@ -135,12 +137,14 @@ public class DynamicCrudClassPathScanner extends ClassPathBeanDefinitionScanner 
         }).forEachKeyValue((k, v) -> {
             if (v.get(mapperClazz) == null) {
                 Class<?> mapper = DynamicHelper.buildMapper(k);
+                logger.info("动态构建:" + mapper.getName());
                 BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(mapper).getBeanDefinition();
                 BeanDefinitionHolder holder = new BeanDefinitionHolder(bd, StrUtil.lowerFirst(mapper.getSimpleName()));
                 processBeanDefinitions(holder);
             }
             if (v.get(repositoryClass) == null) {
                 Class<?> repository = DynamicHelper.buildRepository(k);
+                logger.info("动态构建:" + repository.getName());
                 BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(repository).getBeanDefinition();
                 getRegistry().registerBeanDefinition(StrUtil.lowerFirst(repository.getSimpleName()), bd);
             }
@@ -209,7 +213,10 @@ public class DynamicCrudClassPathScanner extends ClassPathBeanDefinitionScanner 
     }
 
 
-    // todo  检查此处是否完备
+    /**
+     * @param holder
+     * @see ClassPathMapperScanner#processBeanDefinitions(Set)
+     */
     private void processBeanDefinitions(BeanDefinitionHolder holder) {
         AbstractBeanDefinition definition;
         BeanDefinitionRegistry registry = getRegistry();
@@ -224,18 +231,12 @@ public class DynamicCrudClassPathScanner extends ClassPathBeanDefinitionScanner 
         }
         String beanClassName = definition.getBeanClassName();
 
-        // the mapper interface is the original class of the bean
-        // but, the actual class of the bean is MapperFactoryBean
-        definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName); // issue #59
+        definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
         try {
             Class<?> beanClass = Resources.classForName(beanClassName);
-            // Attribute for MockitoPostProcessor
-            // https://github.com/mybatis/spring-boot-starter/issues/475
             definition.setAttribute(FACTORY_BEAN_OBJECT_TYPE, beanClass);
-            // for spring-native
             definition.getPropertyValues().add("mapperInterface", beanClass);
         } catch (ClassNotFoundException ignore) {
-            // ignore
         }
 
         definition.setBeanClass(MapperFactoryBean.class);

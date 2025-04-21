@@ -32,6 +32,7 @@ import java.util.function.Function;
  * @author zhu56
  * @see com.baomidou.mybatisplus.extension.repository.AbstractRepository
  */
+@SuppressWarnings("unchecked")
 public abstract class DynamicRepository<T> implements IBaseRepository<T> {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -68,6 +69,7 @@ public abstract class DynamicRepository<T> implements IBaseRepository<T> {
      * @return baseMapper 真实类型
      * @since 3.5.7
      */
+
     public Class<?> getMapperClass() {
         if (this.mapperClass == null) {
             MybatisMapperProxy<?> mybatisMapperProxy = MybatisUtils.getMybatisMapperProxy(this.getBaseMapper());

@@ -23,6 +23,7 @@
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
         <lombok.version>1.18.38</lombok.version>
         <junit.version>5.11.4</junit.version>
+        <byte-buddy.version>1.17.5</byte-buddy.version>
         <ztream.version>0.1.9</ztream.version>
         <spring.version>5.3.39</spring.version>
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
@@ -53,7 +54,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.17.5</version>
+            <version>${byte-buddy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
