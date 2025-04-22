@@ -2,14 +2,14 @@ package com.taowater.mpex.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import lombok.Getter;
+import com.taowater.mpex.wrapper.interfaces.QueryEx;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +24,11 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings("unused")
 public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQueryExWrapper<T>>
-        implements Query<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
+        implements QueryEx<LambdaQueryExWrapper<T>, T, SFunction<T, ?>> {
 
     private SharedString sqlSelect = new SharedString();
 
-    @Getter
+    @Setter
     private Integer limit;
 
     public LambdaQueryExWrapper() {
@@ -95,15 +95,5 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
     public void clear() {
         super.clear();
         sqlSelect.toNull();
-    }
-
-
-    /**
-     * @param limit 限制条数
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public LambdaQueryExWrapper<T> limit(int limit) {
-        this.limit = limit;
-        return this;
     }
 }

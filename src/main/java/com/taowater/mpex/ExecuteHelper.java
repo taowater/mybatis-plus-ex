@@ -3,7 +3,7 @@ package com.taowater.mpex;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import com.taowater.mpex.wrapper.AbstractLambdaExWrapper;
+import com.taowater.mpex.wrapper.interfaces.CompareRequired;
 import com.taowater.taol.core.function.Function2;
 import com.taowater.taol.core.function.LambdaUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
@@ -55,10 +55,10 @@ class ExecuteHelper {
         // 使用操作流程描述处理该wrapper得到最终查询的wrapper
         operator.accept(wrapper);
         //如果是拓展的wrapper类型
-        if (wrapper instanceof AbstractLambdaExWrapper<?, ?>) {
-            var w = (AbstractLambdaExWrapper<?, ?>) wrapper;
+        if (wrapper instanceof CompareRequired<?, ?>) {
+            var w = (CompareRequired<?, ?>) wrapper;
             //如果无需查库则返回对应类型的默认值
-            if (!Any.of(w).get(AbstractLambdaExWrapper::getNeedQuery, true)) {
+            if (!Any.of(w).get(CompareRequired::needExecute, true)) {
                 Class<R> returnClazz = LambdaUtil.getReturnClass(fun);
                 return DefaultHelper.getValue(returnClazz);
             }

@@ -3,12 +3,11 @@ package com.taowater.mpex.wrapper;
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.Update;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.taowater.mpex.wrapper.interfaces.UpdateSelf;
+import com.taowater.mpex.wrapper.interfaces.UpdateEx;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -25,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @SuppressWarnings("unused")
 public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaUpdateExWrapper<T>>
-        implements Update<LambdaUpdateExWrapper<T>, SFunction<T, ?>>, UpdateSelf<LambdaUpdateExWrapper<T>, SFunction<T, ?>> {
+        implements UpdateEx<LambdaUpdateExWrapper<T>, SFunction<T, ?>> {
 
     private final List<String> sqlSet;
 
@@ -130,19 +129,9 @@ public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaU
      * @param column    字段
      * @param keyword   关键字
      * @param val       值
-     * @return {@link LambdaUpdateExWrapper}<{@link T}>
      */
-    protected LambdaUpdateExWrapper<T> self(boolean condition, SFunction<T, ?> column, String keyword, Object val) {
-        return maybeDo(condition, () -> sqlSet.add(MessageFormat.format("{0}={0}{1}{2}", columnToString(column), keyword, formatParam(null, val))));
-    }
-
     @Override
-    public <N extends Number> LambdaUpdateExWrapper<T> incr(boolean condition, SFunction<T, ?> column, N increment) {
-        return self(condition, column, Constants.PLUS, increment);
-    }
-
-    @Override
-    public <N extends Number> LambdaUpdateExWrapper<T> decr(boolean condition, SFunction<T, ?> column, N decrement) {
-        return self(condition, column, Constants.DASH, decrement);
+    public LambdaUpdateExWrapper<T> self(boolean condition, SFunction<T, ?> column, String keyword, Object val) {
+        return maybeDo(condition, () -> sqlSet.add(MessageFormat.format("{0}={0}{1}{2}", columnToString(column), keyword, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val)));
     }
 }

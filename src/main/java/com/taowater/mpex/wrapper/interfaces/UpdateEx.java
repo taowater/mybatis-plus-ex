@@ -1,16 +1,27 @@
 package com.taowater.mpex.wrapper.interfaces;
 
 
+import com.baomidou.mybatisplus.core.conditions.update.Update;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.taowater.taol.core.util.EmptyUtil;
 
 /**
- * 自更新
+ * 更新操作-包含自更新操作
  *
  * @author zhu56
  */
 @SuppressWarnings("unused")
-public interface UpdateSelf<W, R> {
+public interface UpdateEx<W, R> extends Update<W, R> {
 
+    /**
+     * 字段自操作
+     *
+     * @param condition 条件
+     * @param column    字段
+     * @param keyword   关键字
+     * @param val       值
+     */
+    W self(boolean condition, R column, String keyword, Object val);
 
     /**
      * 自增
@@ -20,7 +31,9 @@ public interface UpdateSelf<W, R> {
      * @param increment 自增值
      * @return {@link W}
      */
-    <N extends Number> W incr(boolean condition, R column, N increment);
+    default <N extends Number> W incr(boolean condition, R column, N increment) {
+        return self(condition, column, Constants.PLUS, increment);
+    }
 
     /**
      * 自增
@@ -73,7 +86,9 @@ public interface UpdateSelf<W, R> {
      * @param decrement 自减值
      * @return {@link W}
      */
-    <N extends Number> W decr(boolean condition, R column, N decrement);
+    default <N extends Number> W decr(boolean condition, R column, N decrement) {
+        return self(condition, column, Constants.DASH, decrement);
+    }
 
     /**
      * 自减
@@ -94,7 +109,7 @@ public interface UpdateSelf<W, R> {
      * @return {@link W}
      */
     default <N extends Number> W decrX(R column, N decrement) {
-        return this.decr(EmptyUtil.isNotEmpty(decrement), column, decrement);
+        return decr(EmptyUtil.isNotEmpty(decrement), column, decrement);
     }
 
     /**
@@ -116,5 +131,16 @@ public interface UpdateSelf<W, R> {
      */
     default W decr(R column) {
         return decr(column, 1);
+    }
+
+
+    @Override
+    default W setIncrBy(boolean condition, R column, Number val) {
+        return incr(condition, column, val);
+    }
+
+    @Override
+    default W setDecrBy(boolean condition, R column, Number val) {
+        return decr(condition, column, val);
     }
 }

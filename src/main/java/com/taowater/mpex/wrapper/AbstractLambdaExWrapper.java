@@ -3,9 +3,7 @@ package com.taowater.mpex.wrapper;
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.taowater.mpex.wrapper.interfaces.CompareColumn;
-import com.taowater.mpex.wrapper.interfaces.CompareIfNotEmpty;
-import com.taowater.mpex.wrapper.interfaces.CompareRequired;
+import com.taowater.mpex.wrapper.interfaces.CompareEx;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,45 +17,21 @@ import lombok.Setter;
 @Getter
 public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper<T, W>>
         extends AbstractLambdaWrapper<T, W>
-        implements CompareRequired<W, SFunction<T, ?>>, CompareIfNotEmpty<W, SFunction<T, ?>>, CompareColumn<W, SFunction<T, ?>> {
+        implements CompareEx<W, SFunction<T, ?>> {
 
     /**
      * 是否需要查询
      */
-    private Boolean needQuery;
+    private boolean execute;
 
-    protected final W addConditionCol(boolean condition, SFunction<T, ?> column1, SqlKeyword sqlKeyword, SFunction<T, ?> column2) {
+    @Override
+    public boolean needExecute() {
+        return execute;
+    }
+
+    @Override
+    public W addConditionCol(boolean condition, SFunction<T, ?> column1, SqlKeyword sqlKeyword, SFunction<T, ?> column2) {
         return maybeDo(condition, () -> appendSqlSegments(columnToSqlSegment(column1), sqlKeyword,
                 columnToSqlSegment(column2)));
-    }
-
-    @Override
-    public W eqCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.EQ, column2);
-    }
-
-    @Override
-    public W neCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.NE, column2);
-    }
-
-    @Override
-    public W gtCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.GT, column2);
-    }
-
-    @Override
-    public W geCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.GE, column2);
-    }
-
-    @Override
-    public W ltCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.LT, column2);
-    }
-
-    @Override
-    public W leCol(boolean condition, SFunction<T, ?> column1, SFunction<T, ?> column2) {
-        return addConditionCol(condition, column1, SqlKeyword.LE, column2);
     }
 }
