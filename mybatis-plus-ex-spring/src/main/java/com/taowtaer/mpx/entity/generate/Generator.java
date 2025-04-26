@@ -20,11 +20,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 生成器
+ *
+ * @author zhu56
+ * @date 2025/04/27 00:21
+ */
 public abstract class Generator<T> {
 
     @Setter
     @Getter
     private BeanDefinitionRegistry registry;
+
+    private Map<Object, Type> map;
 
     private Log getLog() {
         return LogFactory.getLog(this.getClass());
@@ -89,11 +97,17 @@ public abstract class Generator<T> {
         getRegistry().registerBeanDefinition(holder.getBeanName(), holder.getBeanDefinition());
     }
 
-    public final void handle(Class<?> beanClazz) {
-        List<Type> types = find(getRegistry(), getTargetClazz());
-        Map<Object, Type> map = Ztream.of(types).toMap(this::key);
+    protected Map<Object, Type> map() {
+        if (Objects.isNull(map)) {
+            List<Type> types = find(getRegistry(), getTargetClazz());
+            map = Ztream.of(types).toMap(this::key);
+        }
+        return map;
+    }
 
-        if (!map.containsKey(beanClazz)) {
+    public final void handle(Class<?> beanClazz) {
+
+        if (!map().containsKey(beanClazz)) {
             Class<?> generated = generate(beanClazz);
             if (Objects.isNull(generated)) {
                 return;

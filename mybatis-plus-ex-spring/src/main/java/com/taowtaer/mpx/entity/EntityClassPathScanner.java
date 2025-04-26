@@ -24,7 +24,6 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 动态类扫描
@@ -36,6 +35,20 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
     protected final Log logger = LogFactory.getLog(getClass());
 
     private Class<? extends Generator>[] generators;
+
+
+    private List<Generator<?>> gs() {
+        List<? extends Generator<?>> otherGenerators = Ztream.of(generators).map(e -> {
+            Generator<?> generator = ClassUtil.newInstance(e);
+            generator.setRegistry(getRegistry());
+            return generator;
+        }).toList();
+
+        return Ztream.of(
+                new MapperGenerator(getRegistry()),
+                new RepositoryGenerator(getRegistry())
+        ).append(otherGenerators).toList();
+    }
 
     @Nullable
     private final ClassLoader classLoader;
@@ -79,29 +92,10 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        long num = handle(entities);
+        Ztream.of(gs()).forEach(g -> Ztream.of(entities).forEach(g::handle));
         stopWatch.stop();
         BigDecimal scends = BigDecimal.valueOf(stopWatch.getTotalTimeSeconds()).setScale(3, RoundingMode.HALF_UP);
-        logger.info("Generated " + num + " Classes in " + scends + " seconds");
-    }
-
-    private long handle(Set<Class<?>> entities) {
-        AtomicLong sum = new AtomicLong();
-
-        List<? extends Generator<?>> otherGenerators = Ztream.of(generators).map(e -> {
-            Generator<?> generator = ClassUtil.newInstance(e);
-            generator.setRegistry(getRegistry());
-            return generator;
-        }).toList();
-        List<Generator<?>> gs = Ztream.of(
-                new MapperGenerator(getRegistry()),
-                new RepositoryGenerator(getRegistry())
-        ).append(otherGenerators).toList();
-
-        Ztream.of(entities).forEach(e -> {
-            gs.forEach(g -> g.handle(e));
-        });
-        return sum.get();
+        logger.info("Generated " + 0 + " Classes in " + scends + " seconds");
     }
 
     @Override
