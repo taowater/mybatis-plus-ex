@@ -1,60 +1,50 @@
 package com.taowtaer.mpx.entity;
 
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.taowater.mpx.mapper.DynamicMapper;
-import com.taowater.taol.core.reflect.ClassUtil;
-import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.ztream.Ztream;
+import com.taowtaer.mpx.entity.generate.Generator;
+import com.taowtaer.mpx.entity.generate.MapperGenerator;
+import com.taowtaer.mpx.entity.generate.RepositoryGenerator;
 import com.taowtaer.mpx.filter.AllFilter;
-import com.taowtaer.mpx.repository.DynamicRepository;
+import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.mapper.ClassPathMapperScanner;
-import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.aop.scope.ScopedProxyFactoryBean;
-import org.springframework.aop.scope.ScopedProxyUtils;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.ResolvableType;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
-import org.springframework.util.StringUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.StopWatch;
 
-import java.lang.reflect.Type;
-import java.util.*;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 动态 CRUD 类路径扫描仪
+ * 动态类扫描
  *
  * @author zhu56
- * @see ClassPathMapperScanner
  */
-public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
+public class EntityClassPathScanner extends ClassPathScanningCandidateComponentProvider {
+
     protected final Log logger = LogFactory.getLog(getClass());
-    private final Class<?> mapperClazz = DynamicMapper.class;
-    private final Class<?> repositoryClass = DynamicRepository.class;
 
-    static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
+    @Nullable
+    private final ClassLoader classLoader;
 
-    public EntityClassPathScanner(BeanDefinitionRegistry registry) {
-        super(registry);
+    @Getter
+    private final BeanDefinitionRegistry registry;
+
+    public EntityClassPathScanner(@Nullable ClassLoader classLoader, BeanDefinitionRegistry registry) {
+        super(false);
+        this.classLoader = classLoader;
+        this.registry = registry;
     }
 
     public void registerFilters() {
@@ -74,180 +64,58 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
     }
 
 
-    /**
-     * 扫描
-     *
-     * @see ClassPathMapperScanner#scan(String...)
-     */
-    @Override
-    public int scan(String... basePackages) {
-
-        int beanCountAtScanStart = getRegistry().getBeanDefinitionCount();
-
-        Set<BeanDefinitionHolder> bds = this.doScan(basePackages);
-
-        Set<Class<?>> entities = Ztream.of(bds)
-                .map(e -> {
-                    BeanDefinition bd = e.getBeanDefinition();
-                    String beanClassName = bd.getBeanClassName();
-                    Class<?> clazz = ClassUtil.fromName(beanClassName);
-                    getRegistry().removeBeanDefinition(e.getBeanName());
-                    return clazz;
-                })
+    public void scan(String... packageNames) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Scanning all types for reflective usage from " + Arrays.toString(packageNames));
+        }
+        Set<Class<?>> entities = Ztream.of(packageNames)
+                .map(this::findCandidateComponents)
+                .flat(e -> e)
                 .nonNull()
-                .isFalse(Class::isMemberClass)
-                .isFalse(Class::isAnonymousClass)
-                .isFalse(Class::isLocalClass)
-                .toSet(e -> e);
-        List<Type> repositories = find(getRegistry(), repositoryClass);
-        List<Type> mappers = find(getRegistry(), mapperClazz);
+                .toSet(bd -> (Class<?>) bd.getAttribute("type"));
 
-        Ztream.of(entities).hash(e -> e, e -> {
-            Map<Class<?>, Type> subMap = new HashMap<>();
-            subMap.put(mapperClazz, Ztream.of(mappers).eq(m -> TypeUtil.getTypeArgument(m, mapperClazz), e).getFirst());
-            subMap.put(repositoryClass, Ztream.of(repositories).eq(m -> TypeUtil.getTypeArgument(m, repositoryClass), e).getFirst());
-            return subMap;
-        }).forEachKeyValue((k, v) -> {
-            if (v.get(mapperClazz) == null) {
-                Class<?> mapper = DynamicHelper.buildMapper(k);
-                logger.info("动态构建:" + mapper.getName());
-                BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(mapper).getBeanDefinition();
-                BeanDefinitionHolder holder = new BeanDefinitionHolder(bd, StrUtil.lowerFirst(mapper.getSimpleName()));
-                processBeanDefinitions(holder);
-            }
-            if (v.get(repositoryClass) == null) {
-                Class<?> repository = DynamicHelper.buildRepository(k);
-                logger.info("动态构建:" + repository.getName());
-                BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(repository).getBeanDefinition();
-                getRegistry().registerBeanDefinition(StrUtil.lowerFirst(repository.getSimpleName()), bd);
-            }
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        long num = handle(entities);
+        stopWatch.stop();
+        BigDecimal scends = BigDecimal.valueOf(stopWatch.getTotalTimeSeconds()).setScale(3, RoundingMode.HALF_UP);
+        logger.info("Generated " + num + " Classes in " + scends + " seconds");
+    }
+
+    private long handle(Set<Class<?>> entities) {
+        AtomicLong sum = new AtomicLong();
+
+        List<Generator<?>> generators = ListUtil.of(
+                new MapperGenerator(getRegistry()),
+                new RepositoryGenerator(getRegistry())
+        );
+
+        Ztream.of(entities).forEach(e -> {
+            generators.forEach(g -> g.handle(e));
         });
-
-        return (getRegistry().getBeanDefinitionCount() - beanCountAtScanStart);
+        return sum.get();
     }
 
     @Override
     protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
         AnnotationMetadata metadata = beanDefinition.getMetadata();
-        return metadata.isInterface()
-                || metadata.isIndependent()
-                && (metadata.isConcrete()
-                || (metadata.isAbstract() && metadata.hasAnnotatedMethods(Lookup.class.getName())))
-                ;
-    }
-
-    public List<Type> find(BeanDefinitionRegistry registry, Class<?> clazz) {
-        if (registry instanceof ListableBeanFactory) {
-            ListableBeanFactory listableBeanFactory = (ListableBeanFactory) registry;
-            return Ztream.of(listableBeanFactory.getBeanNamesForType(ResolvableType.forClass(clazz)))
-                    .map(e -> getBeanResolvableType(registry, e))
-                    .nonNull()
-                    .toList(ResolvableType::getType);
+        boolean invalid = !metadata.isIndependent()
+                || metadata.isInterface()
+                || metadata.isAbstract();
+        if (invalid) {
+            return false;
         }
-        return null;
 
-    }
-
-    private ResolvableType getBeanResolvableType(BeanDefinitionRegistry registry, String beanName) {
-        try {
-            if (registry.getBeanDefinition(beanName) instanceof AbstractBeanDefinition) {
-                BeanDefinition abd = registry.getBeanDefinition(beanName);
-                ResolvableType type = abd.getResolvableType();
-                if (type != ResolvableType.NONE) {
-                    boolean isFactoryBean = FactoryBean.class.isAssignableFrom(Objects.requireNonNull(type.getRawClass()));
-                    if (!isFactoryBean) {
-                        return type;
-                    }
-                }
-                Class<?> beanClass = ((ListableBeanFactory) registry).getType(beanName);
-                if (beanClass != null) {
-                    return ResolvableType.forClass(beanClass);
-                }
+        String className = beanDefinition.getBeanClassName();
+        if (className != null) {
+            try {
+                Class<?> type = ClassUtils.forName(className, this.classLoader);
+                beanDefinition.setAttribute("type", type);
+                return true;
+            } catch (Exception ex) {
+                return false;
             }
-        } catch (Exception e) {
-            // 处理异常
         }
-        return null;
-    }
-
-
-    /**
-     * @see ClassPathMapperScanner#processBeanDefinitions(Set)
-     */
-    private void processBeanDefinitions(BeanDefinitionHolder holder) {
-        AbstractBeanDefinition definition;
-        BeanDefinitionRegistry registry = getRegistry();
-        definition = (AbstractBeanDefinition) holder.getBeanDefinition();
-        boolean scopedProxy = false;
-        if (ScopedProxyFactoryBean.class.getName().equals(definition.getBeanClassName())) {
-            definition = (AbstractBeanDefinition) Optional
-                    .ofNullable(((RootBeanDefinition) definition).getDecoratedDefinition())
-                    .map(BeanDefinitionHolder::getBeanDefinition).orElseThrow(() -> new IllegalStateException(
-                            "The target bean definition of scoped proxy bean not found. Root bean definition[" + holder + "]"));
-            scopedProxy = true;
-        }
-        String beanClassName = definition.getBeanClassName();
-
-        definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
-        try {
-            Class<?> beanClass = Resources.classForName(beanClassName);
-            definition.setAttribute(FACTORY_BEAN_OBJECT_TYPE, beanClass);
-            definition.getPropertyValues().add("mapperInterface", beanClass);
-        } catch (ClassNotFoundException ignore) {
-        }
-
-        definition.setBeanClass(MapperFactoryBean.class);
-
-        definition.getPropertyValues().add("addToConfig", "true");
-
-        boolean explicitFactoryUsed = false;
-        String sqlSessionFactoryBeanName = (String) ReflectUtil.getFieldValue(this, "sqlSessionFactoryBeanName");
-        SqlSessionFactory sqlSessionFactory = (SqlSessionFactory) ReflectUtil.getFieldValue(this, "sqlSessionFactory");
-        if (StringUtils.hasText(sqlSessionFactoryBeanName)) {
-            definition.getPropertyValues().add("sqlSessionFactory",
-                    new RuntimeBeanReference(sqlSessionFactoryBeanName));
-            explicitFactoryUsed = true;
-        } else if (sqlSessionFactory != null) {
-            definition.getPropertyValues().add("sqlSessionFactory", sqlSessionFactory);
-            explicitFactoryUsed = true;
-        }
-        String sqlSessionTemplateBeanName = (String) ReflectUtil.getFieldValue(this, "sqlSessionTemplateBeanName");
-        SqlSessionTemplate sqlSessionTemplate = (SqlSessionTemplate) ReflectUtil.getFieldValue(this, "sqlSessionTemplate");
-        if (StringUtils.hasText(sqlSessionTemplateBeanName)) {
-            if (explicitFactoryUsed) {
-            }
-            definition.getPropertyValues().add("sqlSessionTemplate",
-                    new RuntimeBeanReference(sqlSessionTemplateBeanName));
-            explicitFactoryUsed = true;
-        } else if (sqlSessionTemplate != null) {
-            if (explicitFactoryUsed) {
-            }
-            definition.getPropertyValues().add("sqlSessionTemplate", sqlSessionTemplate);
-            explicitFactoryUsed = true;
-        }
-
-        if (!explicitFactoryUsed) {
-            definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-        }
-
-        definition.setLazyInit(false);
-
-        if (scopedProxy) {
-            return;
-        }
-        String defaultScope = (String) ReflectUtil.getFieldValue(this, "defaultScope");
-        if (ConfigurableBeanFactory.SCOPE_SINGLETON.equals(definition.getScope()) && defaultScope != null) {
-            definition.setScope(defaultScope);
-        }
-
-        BeanDefinitionHolder finalHolder = holder;
-        if (!definition.isSingleton()) {
-            finalHolder = ScopedProxyUtils.createScopedProxy(holder, registry, true);
-        }
-        String beanName = finalHolder.getBeanName();
-        if (registry.containsBeanDefinition(beanName)) {
-            registry.removeBeanDefinition(beanName);
-        }
-        registry.registerBeanDefinition(beanName, finalHolder.getBeanDefinition());
+        return false;
     }
 }

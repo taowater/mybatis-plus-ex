@@ -1,0 +1,36 @@
+package com.taowtaer.mpx.entity.generate;
+
+import com.taowater.taol.core.reflect.TypeUtil;
+import com.taowtaer.mpx.entity.DynamicHelper;
+import com.taowtaer.mpx.repository.DynamicRepository;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+
+import java.lang.reflect.Type;
+
+/**
+ * Repository生成器
+ *
+ * @author zhu56
+ */
+public class RepositoryGenerator extends Generator<DynamicRepository<?>> {
+
+
+    public RepositoryGenerator(BeanDefinitionRegistry registry) {
+        setRegistry(registry);
+    }
+
+    @Override
+    public String name() {
+        return "Registry";
+    }
+
+    @Override
+    public Object key(Type type) {
+        return TypeUtil.getTypeArgument(type, getTargetClazz());
+    }
+
+    @Override
+    public Class<?> generate(Class<?> beanClass) {
+        return DynamicHelper.buildRepository(beanClass);
+    }
+}

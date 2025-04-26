@@ -24,7 +24,7 @@ public class EntityScannerConfigurer extends MapperScannerConfigurer implements 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         // 指定类
-        EntityClassPathScanner scanner = new EntityClassPathScanner(registry);
+        EntityClassPathScanner scanner = new EntityClassPathScanner(this.getClass().getClassLoader(), registry);
         scanner.registerFilters();
         try {
             scanner.scan(StringUtils.tokenizeToStringArray((String) ReflectUtil.getFieldValue(this, "basePackage"), ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
