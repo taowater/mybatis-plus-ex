@@ -49,8 +49,8 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
     }
 
     @Override
-    public Class<?> generate(Class<?> beanClass) {
-        return DynamicHelper.buildMapper(beanClass);
+    public Class<? extends BaseMapper<?>> generate(Class<?> beanClass) {
+        return (Class<? extends BaseMapper<?>>) DynamicHelper.buildMapper(beanClass);
     }
 
     @Override

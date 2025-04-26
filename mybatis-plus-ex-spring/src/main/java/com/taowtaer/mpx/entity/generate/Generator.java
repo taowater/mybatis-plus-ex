@@ -79,7 +79,7 @@ public abstract class Generator<T> {
     /**
      * 此类创建真实类的逻辑
      */
-    protected abstract Class<?> generate(Class<?> beanClass);
+    protected abstract Class<? extends T> generate(Class<?> beanClass);
 
 
     protected BeanDefinitionHolder simpleBdHolder(Class<?> clazz) {

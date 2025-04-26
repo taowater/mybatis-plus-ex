@@ -30,7 +30,7 @@ public class RepositoryGenerator extends Generator<DynamicRepository<?>> {
     }
 
     @Override
-    public Class<?> generate(Class<?> beanClass) {
-        return DynamicHelper.buildRepository(beanClass);
+    public Class<? extends DynamicRepository<?>> generate(Class<?> beanClass) {
+        return (Class<? extends DynamicRepository<?>>) DynamicHelper.buildRepository(beanClass);
     }
 }
