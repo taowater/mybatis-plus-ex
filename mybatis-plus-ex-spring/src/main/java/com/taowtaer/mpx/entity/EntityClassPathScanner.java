@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
@@ -51,15 +52,19 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
     }
 
     @Nullable
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
 
     @Getter
     private final BeanDefinitionRegistry registry;
 
-    public EntityClassPathScanner(@Nullable ClassLoader classLoader, BeanDefinitionRegistry registry, Class<? extends Generator>[] generators) {
+    public EntityClassPathScanner(BeanDefinitionRegistry registry, Class<? extends Generator>[] generators) {
         super(false);
-        this.classLoader = classLoader;
         this.registry = registry;
+        if (getRegistry() instanceof DefaultListableBeanFactory) {
+            classLoader = ((DefaultListableBeanFactory) registry).getBeanClassLoader();
+        } else {
+            classLoader = getClass().getClassLoader();
+        }
         this.generators = generators;
     }
 
@@ -111,7 +116,7 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
         String className = beanDefinition.getBeanClassName();
         if (className != null) {
             try {
-                Class<?> type = ClassUtils.forName(className, this.classLoader);
+                Class<?> type = ClassUtils.forName(className, classLoader);
                 beanDefinition.setAttribute("type", type);
                 return true;
             } catch (Exception ex) {
