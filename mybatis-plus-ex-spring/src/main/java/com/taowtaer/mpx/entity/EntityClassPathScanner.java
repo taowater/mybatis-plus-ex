@@ -1,7 +1,7 @@
 package com.taowtaer.mpx.entity;
 
-import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.ztream.Ztream;
 import com.taowtaer.mpx.entity.generate.Generator;
 import com.taowtaer.mpx.entity.generate.MapperGenerator;
@@ -35,16 +35,19 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
 
     protected final Log logger = LogFactory.getLog(getClass());
 
+    private Class<? extends Generator>[] generators;
+
     @Nullable
     private final ClassLoader classLoader;
 
     @Getter
     private final BeanDefinitionRegistry registry;
 
-    public EntityClassPathScanner(@Nullable ClassLoader classLoader, BeanDefinitionRegistry registry) {
+    public EntityClassPathScanner(@Nullable ClassLoader classLoader, BeanDefinitionRegistry registry, Class<? extends Generator>[] generators) {
         super(false);
         this.classLoader = classLoader;
         this.registry = registry;
+        this.generators = generators;
     }
 
     public void registerFilters() {
@@ -85,13 +88,18 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
     private long handle(Set<Class<?>> entities) {
         AtomicLong sum = new AtomicLong();
 
-        List<Generator<?>> generators = ListUtil.of(
+        List<? extends Generator<?>> otherGenerators = Ztream.of(generators).map(e -> {
+            Generator<?> generator = ClassUtil.newInstance(e);
+            generator.setRegistry(getRegistry());
+            return generator;
+        }).toList();
+        List<Generator<?>> gs = Ztream.of(
                 new MapperGenerator(getRegistry()),
                 new RepositoryGenerator(getRegistry())
-        );
+        ).append(otherGenerators).toList();
 
         Ztream.of(entities).forEach(e -> {
-            generators.forEach(g -> g.handle(e));
+            gs.forEach(g -> g.handle(e));
         });
         return sum.get();
     }

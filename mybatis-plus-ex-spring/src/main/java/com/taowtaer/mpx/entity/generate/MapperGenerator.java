@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowtaer.mpx.entity.DynamicHelper;
+import lombok.NoArgsConstructor;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -28,6 +29,7 @@ import java.util.Set;
  *
  * @author zhu56
  */
+@NoArgsConstructor
 public class MapperGenerator extends Generator<BaseMapper<?>> {
 
     static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";

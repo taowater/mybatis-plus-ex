@@ -18,6 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class Generator<T> {
 
@@ -94,6 +95,9 @@ public abstract class Generator<T> {
 
         if (!map.containsKey(beanClazz)) {
             Class<?> generated = generate(beanClazz);
+            if (Objects.isNull(generated)) {
+                return;
+            }
             BeanDefinitionHolder holder = simpleBdHolder(generated);
             after(holder);
             getLog().info("Generate " + name() + " for " + beanClazz.getName());

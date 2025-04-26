@@ -18,10 +18,10 @@ import java.lang.reflect.Type;
 @UtilityClass
 public class DynamicHelper {
 
-    private final static String template = "dynamic.%s.%sDynamic%s";
+    public final static String template = "dynamic.%s.%sDynamic%s";
 
 
-    private static TypeDescription.Generic parameterizedType(Class<?> rawType, Type... parameter) {
+    public static TypeDescription.Generic parameterizedType(Class<?> rawType, Type... parameter) {
         return TypeDescription.Generic.Builder.parameterizedType(rawType, parameter)
                 .build();
     }

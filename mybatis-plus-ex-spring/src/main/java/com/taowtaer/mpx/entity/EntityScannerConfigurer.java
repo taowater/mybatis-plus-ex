@@ -1,6 +1,8 @@
 package com.taowtaer.mpx.entity;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.taowtaer.mpx.entity.generate.Generator;
+import lombok.Setter;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,6 +18,10 @@ import org.springframework.util.StringUtils;
  */
 public class EntityScannerConfigurer extends MapperScannerConfigurer implements InitializingBean {
 
+
+    @Setter
+    private Class<? extends Generator>[] generators;
+
     /**
      * 后处理 Bean 定义注册表
      *
@@ -24,7 +30,7 @@ public class EntityScannerConfigurer extends MapperScannerConfigurer implements 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         // 指定类
-        EntityClassPathScanner scanner = new EntityClassPathScanner(this.getClass().getClassLoader(), registry);
+        EntityClassPathScanner scanner = new EntityClassPathScanner(this.getClass().getClassLoader(), registry, generators);
         scanner.registerFilters();
         try {
             scanner.scan(StringUtils.tokenizeToStringArray((String) ReflectUtil.getFieldValue(this, "basePackage"), ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));

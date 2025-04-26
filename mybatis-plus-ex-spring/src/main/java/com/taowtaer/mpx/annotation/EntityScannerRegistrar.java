@@ -76,11 +76,14 @@ public class EntityScannerRegistrar implements ImportBeanDefinitionRegistrar, Be
 
         Class<?> configurerClazz = EntityScannerConfigurer.class;
         List<String> packages = new ArrayList<>();
+
         packages.addAll(Ztream.of(dynamicAttrs.getStringArray("basePackages")).filter(StringUtils::hasText).toList());
         if (packages.isEmpty()) {
             packages.add(getDefaultBasePackage(importingClassMetadata));
         }
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(configurerClazz);
+        builder.addPropertyValue("generators", dynamicAttrs.getClassArray("generators"));
+
         builder.addPropertyValue("processPropertyPlaceHolders", true);
         builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(packages));
         BeanWrapper beanWrapper = new BeanWrapperImpl(configurerClazz);
