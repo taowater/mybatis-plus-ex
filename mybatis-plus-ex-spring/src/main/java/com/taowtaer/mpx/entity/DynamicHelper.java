@@ -48,25 +48,4 @@ public class DynamicHelper {
                 .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
                 .getLoaded();
     }
-
-//    public static Class<?> buildService(Class<?> controllerClazz) {
-//
-//        Class<?> entityClass = (Class<?>) TypeUtil.getTypeArgument(controllerClazz, BaseCrudController.class, 0);
-//        Class<?> voClass = (Class<?>) TypeUtil.getTypeArgument(controllerClazz, BaseCrudController.class, 1);
-//        Class<?> paramClass = (Class<?>) TypeUtil.getTypeArgument(controllerClazz, BaseCrudController.class, 2);
-//        return
-//                new ByteBuddy()
-//                        .subclass(
-//                                parameterizedType(
-//                                        BaseAdminServiceImpl.class,
-//                                        entityClass,
-//                                        voClass,
-//                                        paramClass
-//                                )
-//                        )
-//                        .name(String.format(template, "service", entityClass.getSimpleName(), "Service"))
-//                        .make()
-//                        .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
-//                        .getLoaded();
-//    }
 }

@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 /**
+ * 拓展查询wrapper
+ *
  * @author zhu56
  * @see com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
  */

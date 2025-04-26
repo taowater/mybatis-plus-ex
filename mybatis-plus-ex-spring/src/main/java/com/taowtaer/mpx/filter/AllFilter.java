@@ -15,9 +15,15 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+/**
+ * 组合过滤器
+ *
+ * @author zhu56
+ */
+@SuppressWarnings("unused")
 public class AllFilter implements TypeFilter {
 
-    private TypeFilter[] filters;
+    private final TypeFilter[] filters;
 
     public AllFilter(TypeFilter... filters) {
         this.filters = filters;
@@ -50,7 +56,6 @@ public class AllFilter implements TypeFilter {
             return this;
         }
 
-        @SafeVarargs
         public final Builder superClass(Class<?>... superClasses) {
             this.superClasses = superClasses;
             return this;

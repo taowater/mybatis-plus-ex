@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * 拓展更新wrapper
+ *
+ * @author zhu56
  * @see com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper
  */
 public class UpdateExWrapper<T> extends AbstractWrapper<T, String, UpdateExWrapper<T>>

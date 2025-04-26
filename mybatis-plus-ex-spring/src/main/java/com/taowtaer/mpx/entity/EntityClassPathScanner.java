@@ -66,30 +66,6 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                         .build()
         );
 
-//        addIncludeFilter(
-//                AllFilter.builder()
-//                        .annotation(Component.class)
-//                        .superClass(BaseCrudController.class)
-//                        .build()
-//        );
-
-//        addIncludeFilter(
-//                AllFilter.builder()
-//                        .annotation(Component.class)
-//                        .superClass(BaseAdminService.class)
-//                        .build()
-//        );
-
-//        addIncludeFilter(
-//                AllFilter.builder()
-//                        .annotation(Component.class)
-//                        .superClass(repositoryClass)
-//                        .build()
-//        );
-
-//        addIncludeFilter(new AssignableTypeFilter(mapperClazz));
-
-
         // exclude package-info.java
         addExcludeFilter(
                 (metadataReader, metadataReaderFactory) -> {
@@ -120,12 +96,10 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                     return clazz;
                 })
                 .nonNull()
-                .eq(Class::isMemberClass, false)
-                .eq(Class::isAnonymousClass, false)
-                .eq(Class::isLocalClass, false)
+                .isFalse(Class::isMemberClass)
+                .isFalse(Class::isAnonymousClass)
+                .isFalse(Class::isLocalClass)
                 .toSet(e -> e);
-//        List<Type> controllers = find(getRegistry(), BaseCrudController.class, false);
-//        List<Type> services = find(getRegistry(), BaseAdminService.class, false);
         List<Type> repositories = find(getRegistry(), repositoryClass, false);
         List<Type> mappers = find(getRegistry(), mapperClazz, true);
 
@@ -133,8 +107,6 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
             Map<Class<?>, Type> subMap = new HashMap<>();
             subMap.put(mapperClazz, Ztream.of(mappers).eq(m -> TypeUtil.getTypeArgument(m, mapperClazz), e).getFirst());
             subMap.put(repositoryClass, Ztream.of(repositories).eq(m -> TypeUtil.getTypeArgument(m, repositoryClass), e).getFirst());
-//            subMap.put(BaseAdminService.class, Ztream.of(services).eq(s -> TypeUtil.getTypeArgument(s, BaseAdminService.class), e).getFirst());
-//            subMap.put(BaseCrudController.class, Ztream.of(controllers).eq(c -> TypeUtil.getTypeArgument(c, BaseCrudController.class), e).getFirst());
             return subMap;
         }).forEachKeyValue((k, v) -> {
             if (v.get(mapperClazz) == null) {
@@ -150,14 +122,6 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                 BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(repository).getBeanDefinition();
                 getRegistry().registerBeanDefinition(StrUtil.lowerFirst(repository.getSimpleName()), bd);
             }
-//            if (v.get(BaseAdminService.class) == null) {
-//                Class<?> controller = v.get(BaseCrudController.class);
-//                if (Objects.nonNull(controller)) {
-//                    Class<?> service = DynamicHelper.buildService((Class<?>) controller);
-//                    BeanDefinition bd = BeanDefinitionBuilder.genericBeanDefinition(service).getBeanDefinition();
-//                    getRegistry().registerBeanDefinition(StrUtil.lowerFirst(service.getSimpleName()), bd);
-//                }
-//            }
         });
 
         return (getRegistry().getBeanDefinitionCount() - beanCountAtScanStart);
@@ -183,8 +147,8 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                             registry.removeBeanDefinition(e);
                         }
                         return tuple;
-                    })
-                    .map(t -> t.left)
+                    }).nonNull()
+                    .map(Tuple::getLeft)
                     .toList(ResolvableType::getType);
         }
         return null;
@@ -216,7 +180,6 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
 
 
     /**
-     * @param holder
      * @see ClassPathMapperScanner#processBeanDefinitions(Set)
      */
     private void processBeanDefinitions(BeanDefinitionHolder holder) {
