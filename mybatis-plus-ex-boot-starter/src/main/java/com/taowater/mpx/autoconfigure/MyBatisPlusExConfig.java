@@ -1,5 +1,6 @@
 package com.taowater.mpx.autoconfigure;
 
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.taowater.mpx.method.ExMethodSqlInjector;
 import com.taowtaer.mpx.entity.EntityScannerConfigurer;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,6 +47,7 @@ import java.util.stream.Stream;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @EnableConfigurationProperties(MybatisPlusProperties.class)
+@AutoConfigureAfter({MybatisPlusAutoConfiguration.class, MybatisPlusAutoConfiguration.MapperScannerRegistrarNotFoundConfiguration.class})
 public class MyBatisPlusExConfig {
 
 

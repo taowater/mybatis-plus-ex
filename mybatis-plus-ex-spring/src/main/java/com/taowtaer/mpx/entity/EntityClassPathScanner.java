@@ -4,7 +4,6 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.taowater.mpx.mapper.DynamicMapper;
-import com.taowater.taol.core.bo.Tuple;
 import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.ztream.Ztream;
@@ -100,8 +99,8 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                 .isFalse(Class::isAnonymousClass)
                 .isFalse(Class::isLocalClass)
                 .toSet(e -> e);
-        List<Type> repositories = find(getRegistry(), repositoryClass, false);
-        List<Type> mappers = find(getRegistry(), mapperClazz, true);
+        List<Type> repositories = find(getRegistry(), repositoryClass);
+        List<Type> mappers = find(getRegistry(), mapperClazz);
 
         Ztream.of(entities).hash(e -> e, e -> {
             Map<Class<?>, Type> subMap = new HashMap<>();
@@ -137,39 +136,32 @@ public class EntityClassPathScanner extends ClassPathBeanDefinitionScanner {
                 ;
     }
 
-    public List<Type> find(BeanDefinitionRegistry registry, Class<?> clazz, boolean remove) {
+    public List<Type> find(BeanDefinitionRegistry registry, Class<?> clazz) {
         if (registry instanceof ListableBeanFactory) {
             ListableBeanFactory listableBeanFactory = (ListableBeanFactory) registry;
             return Ztream.of(listableBeanFactory.getBeanNamesForType(ResolvableType.forClass(clazz)))
-                    .map(e -> {
-                        Tuple<ResolvableType, Boolean> tuple = getBeanResolvableType(registry, e);
-                        if (remove && !tuple.right) {
-                            registry.removeBeanDefinition(e);
-                        }
-                        return tuple;
-                    }).nonNull()
-                    .map(Tuple::getLeft)
+                    .map(e -> getBeanResolvableType(registry, e))
+                    .nonNull()
                     .toList(ResolvableType::getType);
         }
         return null;
 
     }
 
-    private Tuple<ResolvableType, Boolean> getBeanResolvableType(BeanDefinitionRegistry registry, String beanName) {
+    private ResolvableType getBeanResolvableType(BeanDefinitionRegistry registry, String beanName) {
         try {
             if (registry.getBeanDefinition(beanName) instanceof AbstractBeanDefinition) {
                 BeanDefinition abd = registry.getBeanDefinition(beanName);
                 ResolvableType type = abd.getResolvableType();
-                boolean isFactoryBean = false;
                 if (type != ResolvableType.NONE) {
-                    isFactoryBean = FactoryBean.class.isAssignableFrom(Objects.requireNonNull(type.getRawClass()));
+                    boolean isFactoryBean = FactoryBean.class.isAssignableFrom(Objects.requireNonNull(type.getRawClass()));
                     if (!isFactoryBean) {
-                        return Tuple.of(type, false);
+                        return type;
                     }
                 }
                 Class<?> beanClass = ((ListableBeanFactory) registry).getType(beanName);
                 if (beanClass != null) {
-                    return Tuple.of(ResolvableType.forClass(beanClass), isFactoryBean);
+                    return ResolvableType.forClass(beanClass);
                 }
             }
         } catch (Exception e) {
