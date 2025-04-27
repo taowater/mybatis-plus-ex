@@ -36,13 +36,14 @@ class SelectList extends AbstractMethod {
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
         DbType dbType = getDbType();
-        String sql = buildLimitSql(tableInfo, dbType);
+        String sql = buildLimitSql(tableInfo);
         SqlSource sqlSource = super.createSqlSource(configuration, sql, modelClass);
         return this.addSelectMappedStatementForTable(mapperClass, methodName, sqlSource, tableInfo);
     }
 
-    private String buildLimitSql(TableInfo tableInfo, DbType dbType) {
+    private String buildLimitSql(TableInfo tableInfo) {
         String sqlFirst = sqlFirst();
+        DbType dbType = getDbType();
         String selectColumns = sqlSelectColumns(tableInfo, true);
         String tableName = tableInfo.getTableName();
         String whereClause = sqlWhereEntityWrapper(true, tableInfo);
@@ -98,6 +99,5 @@ class SelectList extends AbstractMethod {
                 }
             }
         }
-
     }
 }
