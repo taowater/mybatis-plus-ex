@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.taowater</groupId>
-        <artifactId>mybatis-plus-ex</artifactId>
+        <artifactId>mybatis-plus-ex-root</artifactId>
         <version>${revision}</version>
     </parent>
     <artifactId>mybatis-plus-ex-core</artifactId>
@@ -17,6 +17,5 @@
             <version>${mybatis-plus.version}</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>

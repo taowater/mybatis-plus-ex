@@ -1,9 +1,9 @@
-package com.taowtaer.mpx.entity.generate;
+package com.taowtaer.mpx.spring.entity.generate;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.taol.core.reflect.TypeUtil;
-import com.taowtaer.mpx.entity.DynamicHelper;
+import com.taowtaer.mpx.spring.entity.GenerateHelper;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -50,7 +50,7 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
 
     @Override
     public Class<? extends BaseMapper<?>> generate(Class<?> beanClass) {
-        return (Class<? extends BaseMapper<?>>) DynamicHelper.buildMapper(beanClass);
+        return (Class<? extends BaseMapper<?>>) GenerateHelper.buildMapper(beanClass);
     }
 
     @Override

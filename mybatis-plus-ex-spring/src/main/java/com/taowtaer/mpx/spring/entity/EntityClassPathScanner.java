@@ -1,12 +1,12 @@
-package com.taowtaer.mpx.entity;
+package com.taowtaer.mpx.spring.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.entity.generate.Generator;
-import com.taowtaer.mpx.entity.generate.MapperGenerator;
-import com.taowtaer.mpx.entity.generate.RepositoryGenerator;
-import com.taowtaer.mpx.filter.AllFilter;
+import com.taowtaer.mpx.spring.entity.generate.Generator;
+import com.taowtaer.mpx.spring.entity.generate.MapperGenerator;
+import com.taowtaer.mpx.spring.entity.generate.RepositoryGenerator;
+import com.taowtaer.mpx.spring.filter.AllFilter;
 import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

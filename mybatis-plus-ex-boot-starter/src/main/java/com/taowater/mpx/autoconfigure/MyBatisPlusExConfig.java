@@ -3,7 +3,7 @@ package com.taowater.mpx.autoconfigure;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.taowater.mpx.method.ExMethodSqlInjector;
-import com.taowtaer.mpx.entity.EntityScannerConfigurer;
+import com.taowtaer.mpx.spring.entity.EntityScannerConfigurer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;

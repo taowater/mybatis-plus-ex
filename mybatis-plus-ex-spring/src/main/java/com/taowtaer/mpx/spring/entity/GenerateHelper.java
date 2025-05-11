@@ -1,7 +1,7 @@
-package com.taowtaer.mpx.entity;
+package com.taowtaer.mpx.spring.entity;
 
 import com.taowater.mpx.mapper.BaseMapper;
-import com.taowtaer.mpx.repository.DynamicRepository;
+import com.taowtaer.mpx.spring.repository.GeneratedRepository;
 import lombok.experimental.UtilityClass;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.type.TypeDescription;
@@ -16,9 +16,9 @@ import java.lang.reflect.Type;
  * @date 2025/04/26 00:18
  */
 @UtilityClass
-public class DynamicHelper {
+public class GenerateHelper {
 
-    public final static String template = "dynamic.%s.%sDynamic%s";
+    public final static String template = "generate.%s.%sGenerated%s";
 
 
     public static TypeDescription.Generic parameterizedType(Class<?> rawType, Type... parameter) {
@@ -39,7 +39,7 @@ public class DynamicHelper {
         return new ByteBuddy()
                 .subclass(
                         parameterizedType(
-                                DynamicRepository.class,
+                                GeneratedRepository.class,
                                 entityClass
                         )
                 )

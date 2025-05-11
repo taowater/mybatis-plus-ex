@@ -1,7 +1,7 @@
-package com.taowtaer.mpx.annotation;
+package com.taowtaer.mpx.spring.annotation;
 
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.entity.EntityScannerConfigurer;
+import com.taowtaer.mpx.spring.entity.EntityScannerConfigurer;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanWrapper;
@@ -29,10 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Bean definition registrar for {@link EntityScannerConfigurer}.
- *
- * @author KamToHung
- * @since 1.5.0
+ * 实体扫描注册
  */
 public class EntityScannerRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware, EnvironmentAware {
 
@@ -56,8 +53,6 @@ public class EntityScannerRegistrar implements ImportBeanDefinitionRegistrar, Be
 
     /**
      * 注册 Bean 定义
-     *
-     * @see org.mybatis.spring.annotation.MapperScannerRegistrar#registerBeanDefinitions(AnnotationMetadata, BeanDefinitionRegistry)
      */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {

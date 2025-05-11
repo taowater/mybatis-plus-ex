@@ -1,8 +1,8 @@
-package com.taowtaer.mpx.entity.generate;
+package com.taowtaer.mpx.spring.entity.generate;
 
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.entity.BeanDefinitionUtil;
+import com.taowtaer.mpx.spring.entity.BeanDefinitionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.logging.Log;

@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.repository;
+package com.taowtaer.mpx.spring.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
@@ -26,13 +26,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * 抽象动态持久层操作
+ * 生成的动态持久层操作
  *
  * @author zhu56
  * @see com.baomidou.mybatisplus.extension.repository.AbstractRepository
  */
 @SuppressWarnings("unchecked")
-public abstract class DynamicRepository<T> implements IBaseRepository<T> {
+public abstract class GeneratedRepository<T> implements IBaseRepository<T> {
 
     protected final Log log = LogFactory.getLog(getClass());
 
@@ -59,7 +59,7 @@ public abstract class DynamicRepository<T> implements IBaseRepository<T> {
     @Override
     public Class<T> getEntityClass() {
         if (this.entityClass == null) {
-            this.entityClass = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), DynamicRepository.class);
+            this.entityClass = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), GeneratedRepository.class);
         }
         return this.entityClass;
     }

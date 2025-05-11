@@ -5,5 +5,5 @@ package com.taowater.mpx.mapper;
  *
  * @author zhu56
  */
-public interface DynamicMapper<T> extends BaseMapper<T> {
+public interface GeneratedMapper<T> extends BaseMapper<T> {
 }

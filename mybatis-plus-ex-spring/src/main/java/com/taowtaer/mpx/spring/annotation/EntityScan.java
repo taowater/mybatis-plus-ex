@@ -1,7 +1,6 @@
-package com.taowtaer.mpx.annotation;
+package com.taowtaer.mpx.spring.annotation;
 
-import com.taowtaer.mpx.entity.generate.Generator;
-import org.mybatis.spring.annotation.MapperScan;
+import com.taowtaer.mpx.spring.entity.generate.Generator;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
@@ -29,15 +28,11 @@ public @interface EntityScan {
 
     /**
      * 指定本组生成操作基础层对应sqlSessionTemplateRef
-     *
-     * @see MapperScan#sqlSessionTemplateRef()
      */
     String sqlSessionTemplateRef() default "";
 
     /**
      * 指定本组生成操作基础层对应sqlSessionFactoryRef
-     *
-     * @see MapperScan#sqlSessionFactoryRef()
      */
     String sqlSessionFactoryRef() default "";
 }

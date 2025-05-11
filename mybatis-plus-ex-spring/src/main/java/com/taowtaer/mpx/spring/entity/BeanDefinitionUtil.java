@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.entity;
+package com.taowtaer.mpx.spring.entity;
 
 import com.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;

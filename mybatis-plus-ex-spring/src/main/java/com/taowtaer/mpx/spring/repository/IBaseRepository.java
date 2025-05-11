@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.repository;
+package com.taowtaer.mpx.spring.repository;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;

@@ -1,12 +1,16 @@
-package com.taowtaer.mpx.entity;
+package com.taowtaer.mpx.spring.entity;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.taowtaer.mpx.entity.generate.Generator;
+import com.taowtaer.mpx.spring.entity.generate.Generator;
+import lombok.Getter;
 import lombok.Setter;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -16,11 +20,24 @@ import org.springframework.util.StringUtils;
  * @author zhu56
  * @date 2025/04/26 00:47
  */
-public class EntityScannerConfigurer extends MapperScannerConfigurer implements InitializingBean {
-
-
+public class EntityScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean {
     @Setter
-    private Class<? extends Generator>[] generators;
+    private Class<? extends Generator<?>>[] generators;
+    @Getter
+    @Setter
+    private String basePackage;
+    @Getter
+    @Setter
+    private boolean processPropertyPlaceHolders;
+    @Getter
+    @Setter
+    private SqlSessionTemplate sqlSessionTemplate;
+    @Getter
+    @Setter
+    private String sqlSessionFactoryBeanName;
+    @Getter
+    @Setter
+    private String sqlSessionTemplateBeanName;
 
     /**
      * 后处理 Bean 定义注册表
@@ -43,4 +60,7 @@ public class EntityScannerConfigurer extends MapperScannerConfigurer implements 
     public void afterPropertiesSet() {
     }
 
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    }
 }
