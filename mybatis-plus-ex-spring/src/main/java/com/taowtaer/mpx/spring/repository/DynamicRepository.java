@@ -32,7 +32,7 @@ import java.util.function.Function;
  * @see com.baomidou.mybatisplus.extension.repository.AbstractRepository
  */
 @SuppressWarnings("unchecked")
-public abstract class GeneratedRepository<T> implements IBaseRepository<T> {
+public abstract class DynamicRepository<T> implements IBaseRepository<T> {
 
     protected final Log log = LogFactory.getLog(getClass());
 
@@ -59,7 +59,7 @@ public abstract class GeneratedRepository<T> implements IBaseRepository<T> {
     @Override
     public Class<T> getEntityClass() {
         if (this.entityClass == null) {
-            this.entityClass = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), GeneratedRepository.class);
+            this.entityClass = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), DynamicRepository.class);
         }
         return this.entityClass;
     }

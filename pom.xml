@@ -36,6 +36,7 @@
         <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
 
         <junit.version>5.11.4</junit.version>
         <lombok.version>1.18.38</lombok.version>
@@ -205,11 +206,10 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
                     <!--                    <autoPublish>true</autoPublish>-->
                 </configuration>
             </plugin>

@@ -2,7 +2,7 @@ package com.taowtaer.mpx.spring.entity.generate;
 
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowtaer.mpx.spring.entity.GenerateHelper;
-import com.taowtaer.mpx.spring.repository.GeneratedRepository;
+import com.taowtaer.mpx.spring.repository.DynamicRepository;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 import java.lang.reflect.Type;
@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
  *
  * @author zhu56
  */
-public class RepositoryGenerator extends Generator<GeneratedRepository<?>> {
+public class RepositoryGenerator extends Generator<DynamicRepository<?>> {
 
 
     public RepositoryGenerator(BeanDefinitionRegistry registry) {
@@ -30,7 +30,7 @@ public class RepositoryGenerator extends Generator<GeneratedRepository<?>> {
     }
 
     @Override
-    public Class<? extends GeneratedRepository<?>> generate(Class<?> beanClass) {
-        return (Class<? extends GeneratedRepository<?>>) GenerateHelper.buildRepository(beanClass);
+    public Class<? extends DynamicRepository<?>> generate(Class<?> beanClass) {
+        return (Class<? extends DynamicRepository<?>>) GenerateHelper.buildRepository(beanClass);
     }
 }
