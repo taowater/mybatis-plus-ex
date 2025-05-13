@@ -30,8 +30,6 @@ import java.util.function.Function;
 @UtilityClass
 class ExecuteHelper {
 
-    private final static Map<Class<?>, Class<?>> MAP = new ConcurrentHashMap<>();
-
     private final static Map<String, String> MS_CACHE = new ConcurrentHashMap<>();
 
     /**
@@ -49,7 +47,7 @@ class ExecuteHelper {
             return null;
         }
         // 获得该mapper操作的实体类型
-        Class<T> clazz = (Class<T>) MAP.computeIfAbsent(mapper.getClass(), c -> (Class<T>) TypeUtil.getTypeArgument(c, BaseMapper.class));
+        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(mapper.getClass(), BaseMapper.class);
         // 获取wrapper对象
         W wrapper = wFun.apply(clazz);
         // 使用操作流程描述处理该wrapper得到最终查询的wrapper
