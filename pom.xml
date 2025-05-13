@@ -2,9 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.taowater</groupId>
-    <artifactId>mybatis-plus-ex</artifactId>
-    <version>0.1.0</version>
-    <name>mybatis-plus-ex</name>
+    <artifactId>mybatis-plus-ex-root</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>mybatis-plus-ex-root</name>
     <description>mybatis-plus用法上的一些拓展</description>
     <developers>
         <developer>
@@ -12,32 +13,55 @@
             <email>248771337@qq.com</email>
         </developer>
     </developers>
+    <modules>
+        <module>mybatis-plus-ex-boot-starter</module>
+        <module>mybatis-plus-ex-core</module>
+        <module>mybatis-plus-ex-spring</module>
+        <module>mybatis-plus-ex</module>
+    </modules>
     <url>https://github.com/taowater/mybatis-plus-ex</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <revision>0.2.1</revision>
         <java.version>8</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
+
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
-        <lombok.version>1.18.38</lombok.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+
         <junit.version>5.11.4</junit.version>
-        <ztream.version>0.1.9</ztream.version>
-        <mybatis-plus.version>3.5.11</mybatis-plus.version>
+        <lombok.version>1.18.38</lombok.version>
+        <hutool.version>5.8.37</hutool.version>
+        <byte-buddy.version>1.17.5</byte-buddy.version>
+        <ztream.version>0.2.1</ztream.version>
+        <spring.version>5.3.39</spring.version>
+        <mybatis-plus.version>3.5.12</mybatis-plus.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus</artifactId>
+            <artifactId>mybatis-plus-bom</artifactId>
+            <type>pom</type>
+            <scope>import</scope>
             <version>${mybatis-plus.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <version>${lombok.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>io.github.taowater</groupId>
             <artifactId>ztream</artifactId>
@@ -89,6 +113,39 @@
                     <target>${java.version}</target>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
+            </plugin>
+            <!-- 添加flatten-maven-plugin插件 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 避免IDE将 .flattened-pom.xml 自动识别为功能模块 -->
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                            <pomElements>
+                                <parent>expand</parent>
+                                <distributionManagement>remove</distributionManagement>
+                                <repositories>remove</repositories>
+                            </pomElements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Javadoc工具 -->
             <plugin>
@@ -149,11 +206,10 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
                     <!--                    <autoPublish>true</autoPublish>-->
                 </configuration>
             </plugin>
