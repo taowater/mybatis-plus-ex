@@ -32,8 +32,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
 
     /**
      * 查询总记录数
-     *
-     * @return {@link Long }
      */
     default Long selectCount() {
         return this.selectCount((Wrapper<T>) null);
@@ -43,7 +41,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 查询总记录数
      *
      * @param consumer 操作符
-     * @return {@link Long}
      */
     default Long selectCount(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Long result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
@@ -53,8 +50,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
 
     /**
      * 查询列表
-     *
-     * @return {@link List }<{@link T }>
      */
     default List<T> selectList() {
         return this.selectList((Wrapper<T>) null);
@@ -64,7 +59,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 查询列表
      *
      * @param consumer 操作符
-     * @return {@link List}<{@link T}>
      */
     default List<T> selectList(Consumer<LambdaQueryExWrapper<T>> consumer) {
         List<T> result = ExecuteHelper.execute(this, consumer, BaseMapper::selectList, LambdaQueryExWrapper::new);
@@ -84,11 +78,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
 
     /**
      * 查询为流
-     *
-     * @return {@link Ztream }<{@link T }>
      */
     default Ztream<T> selectZtream() {
-        return Ztream.of(selectList());
+        return selectZtream(null);
     }
 
     /**
@@ -105,7 +97,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 查询一个
      *
      * @param consumer 操作符
-     * @return {@link T}
      */
     default T selectOne(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return selectOne(consumer, false);
@@ -115,7 +106,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 查询一个，结果用Any包装
      *
      * @param consumer 操作符
-     * @return {@link Any}<{@link T}>
      */
     default Any<T> selectOneX(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return Any.of(selectOne(consumer));
@@ -125,7 +115,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 判断是否存在
      *
      * @param consumer 操作
-     * @return boolean
      */
     default boolean exists(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::selectExists, LambdaQueryExWrapper::new);
@@ -136,7 +125,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 判断数据是否存在
      *
      * @param queryWrapper 查询包装器
-     * @return {@link Integer }
      */
     Integer selectExists(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
 
@@ -145,7 +133,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param consumer 操作
      * @param throwEx  结果多个是否抛出异常
-     * @return {@link T}
      */
     default T selectOne(Consumer<LambdaQueryExWrapper<T>> consumer, boolean throwEx) {
         consumer = consumer.andThen(w -> w.limit(throwEx ? 2 : 1));
@@ -164,7 +151,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param e        实体
      * @param consumer 操作
-     * @return int 更新数量
      */
     default int update(T e, Consumer<LambdaUpdateExWrapper<T>> consumer) {
         Integer update = ExecuteHelper.execute(this, consumer, (m, w) -> m.update(e, w), LambdaUpdateExWrapper::new);
@@ -175,7 +161,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 更新操作
      *
      * @param consumer 操作
-     * @return int 更新数量
      */
     default int update(Consumer<LambdaUpdateExWrapper<T>> consumer) {
         return update(null, consumer);
@@ -185,7 +170,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 删除操作
      *
      * @param consumer 操作符
-     * @return int 删除数量
      */
     default int delete(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::delete, LambdaQueryExWrapper::new);
@@ -197,7 +181,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param field  属性
      * @param values 值集合
-     * @return {@link Map}<{@link K}, {@link List}<{@link T}>>
      */
     default <K extends Serializable> Map<K, List<T>> groupBy(SFunction<T, K> field, Collection<K> values) {
         return this.groupBy(field, values, Function.identity());
@@ -209,7 +192,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param field  属性
      * @param values 值集合
      * @param funV   分组值处理方法
-     * @return {@link Map}<{@link K}, {@link List}<{@link A}>>
      */
     default <K extends Serializable, A> Map<K, List<A>> groupBy(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
         if (EmptyUtil.isHadEmpty(field, values)) {
@@ -224,7 +206,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param field  属性
      * @param values 值集合
      * @param clazzV 分组值转换类型
-     * @return {@link Map}<{@link K}, {@link List}<{@link A}>>
      */
     default <K extends Serializable, A> Map<K, List<A>> groupBy(SFunction<T, K> field, Collection<K> values, Class<A> clazzV) {
         return groupBy(field, values, e -> ConvertUtil.convert(e, clazzV));
@@ -236,7 +217,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param field  属性
      * @param values 值集合
-     * @return {@link Map}<{@link K}, {@link T}>
      */
     default <K extends Serializable> Map<K, T> mapBy(SFunction<T, K> field, Collection<K> values) {
         return mapBy(field, values, Function.identity());
@@ -249,7 +229,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param field  属性
      * @param values 值集合
      * @param funV   值处理方法
-     * @return {@link Map}<{@link K}, {@link A}>
      */
     default <K extends Serializable, A> Map<K, A> mapBy(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
         if (EmptyUtil.isHadEmpty(field, values)) {
@@ -264,7 +243,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param field  属性
      * @param values 值集合
      * @param clazzV 值转换类型
-     * @return {@link Map}<{@link K}, {@link A}>
      */
     default <K extends Serializable, A> Map<K, A> mapBy(SFunction<T, K> field, Collection<K> values, Class<A> clazzV) {
         return mapBy(field, values, e -> ConvertUtil.convert(e, clazzV));
