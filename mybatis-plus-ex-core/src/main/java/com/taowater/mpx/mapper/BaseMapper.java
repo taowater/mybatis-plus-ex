@@ -87,7 +87,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 查询为流
      *
      * @param consumer 操作
-     * @return {@link Ztream}<{@link T}>
      */
     default Ztream<T> selectZtream(Consumer<LambdaQueryExWrapper<T>> consumer) {
         return Ztream.of(selectList(consumer));

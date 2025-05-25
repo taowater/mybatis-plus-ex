@@ -22,7 +22,7 @@ public abstract class AbstractLambdaExWrapper<T, W extends AbstractLambdaWrapper
     /**
      * 是否需要查询
      */
-    private boolean execute;
+    private boolean execute = true;
 
     @Override
     public boolean needExecute() {
