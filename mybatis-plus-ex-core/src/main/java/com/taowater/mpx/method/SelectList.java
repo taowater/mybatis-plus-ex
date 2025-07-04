@@ -71,7 +71,7 @@ class SelectList extends AbstractMethod {
         } else if (dbType.equals(DbType.DB2)) {
             limitFormat = "FETCH FIRST ${ew.limit} ROWS ONLY";
         }
-        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, String.format("%s != null and %s != null", WRAPPER, "ew.limit"), true);
+        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, String.format("%s != null and (ew instanceof com.taowater.mpx.wrapper.QueryExWrapper or ew instanceof com.taowater.mpx.wrapper.LambdaQueryExWrapper) and %s != null", WRAPPER, "ew.limit"), true);
     }
 
     /**

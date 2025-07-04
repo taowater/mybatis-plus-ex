@@ -1,6 +1,6 @@
 package com.taowtaer.mpx.spring.entity;
-
-import com.taowater.mpx.mapper.BaseMapper;
+ 
+import com.taowater.mpx.mapper.DynamicMapper;
 import com.taowtaer.mpx.spring.repository.DynamicRepository;
 import lombok.experimental.UtilityClass;
 import net.bytebuddy.ByteBuddy;
@@ -28,7 +28,7 @@ public class GenerateHelper {
 
     public static Class<?> buildMapper(Class<?> clazz) {
         return new ByteBuddy()
-                .makeInterface(parameterizedType(BaseMapper.class, clazz))
+                .makeInterface(parameterizedType(DynamicMapper.class, clazz))
                 .name(String.format(template, "mapper", clazz.getSimpleName(), "Mapper"))
                 .make()
                 .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)

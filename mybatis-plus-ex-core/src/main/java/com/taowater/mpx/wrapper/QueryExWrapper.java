@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class QueryExWrapper<T> extends AbstractWrapper<T, String, QueryExWrapper
         implements CompareEx<QueryExWrapper<T>, String>, QueryEx<QueryExWrapper<T>, T, String> {
 
     @Setter
+    @Getter
     private Integer limit;
     /**
      * 是否需要查询
