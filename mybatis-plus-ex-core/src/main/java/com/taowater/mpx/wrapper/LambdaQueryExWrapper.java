@@ -63,6 +63,18 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
     }
 
     @Override
+    @SafeVarargs
+    public final LambdaQueryExWrapper<T> select(SFunction<T, ?>... columns) {
+        return select(true, CollectionUtils.toList(columns));
+    }
+
+    @Override
+    @SafeVarargs
+    public final LambdaQueryExWrapper<T> select(boolean condition, SFunction<T, ?>... columns) {
+        return select(condition, CollectionUtils.toList(columns));
+    }
+
+    @Override
     public LambdaQueryExWrapper<T> select(boolean condition, List<SFunction<T, ?>> columns) {
         if (condition && CollectionUtils.isNotEmpty(columns)) {
             this.sqlSelect.setStringValue(columnsToString(false, columns));
