@@ -40,7 +40,7 @@
 
         <junit.version>5.11.4</junit.version>
         <lombok.version>1.18.38</lombok.version>
-        <hutool.version>5.8.37</hutool.version>
+        <hutool.version>5.8.39</hutool.version>
         <byte-buddy.version>1.17.5</byte-buddy.version>
         <ztream.version>0.2.1</ztream.version>
         <spring.version>5.3.39</spring.version>

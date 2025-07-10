@@ -5,6 +5,7 @@ import com.taowater.ztream.Ztream;
 import com.taowtaer.mpx.spring.entity.BeanDefinitionUtil;
 import lombok.Getter;
 import lombok.Setter;
+import net.bytebuddy.description.type.TypeDescription;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -27,6 +28,11 @@ import java.util.Objects;
  * @date 2025/04/27 00:21
  */
 public abstract class Generator<T> {
+
+    protected TypeDescription.Generic parameterizedType(Class<?> rawType, Type... parameter) {
+        return TypeDescription.Generic.Builder.parameterizedType(rawType, parameter)
+                .build();
+    }
 
     @Setter
     @Getter

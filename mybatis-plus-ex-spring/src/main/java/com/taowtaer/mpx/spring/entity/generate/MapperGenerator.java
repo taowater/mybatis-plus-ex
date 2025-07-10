@@ -6,6 +6,8 @@ import com.taowater.mpx.mapper.DynamicMapper;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowtaer.mpx.spring.entity.GenerateHelper;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -50,8 +52,14 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Class<? extends DynamicMapper<?>> generate(Class<?> beanClass) {
-        return (Class<? extends DynamicMapper<?>>) GenerateHelper.buildMapper(beanClass);
+        return (Class<? extends DynamicMapper<?>>) new ByteBuddy()
+                .makeInterface(parameterizedType(DynamicMapper.class, beanClass))
+                .name(String.format(GenerateHelper.template, "mapper", beanClass.getSimpleName(), "Mapper"))
+                .make()
+                .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+                .getLoaded();
     }
 
     @Override
