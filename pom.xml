@@ -42,7 +42,7 @@
         <lombok.version>1.18.38</lombok.version>
         <hutool.version>5.8.39</hutool.version>
         <byte-buddy.version>1.17.5</byte-buddy.version>
-        <ztream.version>0.2.1</ztream.version>
+        <ztream.version>0.2.2</ztream.version>
         <spring.version>5.3.39</spring.version>
         <mybatis-plus.version>3.5.12</mybatis-plus.version>
     </properties>

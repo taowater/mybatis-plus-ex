@@ -6,12 +6,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
-import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +35,7 @@ interface IBaseRepository<T> extends IService<T> {
      * @return {@link List}<{@link T}>
      */
     default <V extends Serializable> List<T> list(SFunction<T, V> field, V value) {
-        if (EmptyUtil.isHadEmpty(field, value)) {
-            return new ArrayList<>(0);
-        }
-        return this.list(w -> w.eq(field, value));
+        return this.list(w -> w.eqR(field, value));
     }
 
     /**
@@ -51,10 +46,7 @@ interface IBaseRepository<T> extends IService<T> {
      * @return {@link List}<{@link T}>
      */
     default <V extends Serializable> List<T> list(SFunction<T, V> field, Collection<V> c) {
-        if (EmptyUtil.isHadEmpty(field, c)) {
-            return new ArrayList<>(0);
-        }
-        return this.list(w -> w.in(field, c));
+        return this.list(w -> w.inR(field, c));
     }
 
     /**
@@ -65,10 +57,7 @@ interface IBaseRepository<T> extends IService<T> {
      * @return {@link T}
      */
     default <V extends Serializable> T getOne(SFunction<T, V> field, V value) {
-        if (EmptyUtil.isHadEmpty(field, value)) {
-            return null;
-        }
-        return this.getOne(w -> w.eq(field, value));
+        return this.getOne(w -> w.eqR(field, value));
     }
 
     /**
@@ -79,10 +68,7 @@ interface IBaseRepository<T> extends IService<T> {
      * @return boolean
      */
     default <V extends Serializable> boolean remove(SFunction<T, V> field, V value) {
-        if (EmptyUtil.isHadEmpty(field, value)) {
-            return false;
-        }
-        return this.remove(w -> w.eq(field, value));
+        return this.remove(w -> w.eqR(field, value));
     }
 
     /**
@@ -93,10 +79,7 @@ interface IBaseRepository<T> extends IService<T> {
      * @return boolean
      */
     default <V extends Serializable> boolean remove(SFunction<T, V> field, Collection<V> c) {
-        if (EmptyUtil.isHadEmpty(field, c)) {
-            return false;
-        }
-        return this.remove(w -> w.in(field, c));
+        return this.remove(w -> w.inR(field, c));
     }
 
     /**
