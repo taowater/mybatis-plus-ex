@@ -3,6 +3,7 @@ package com.taowater.mpx.wrapper;
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 拓展更新wrapper
  *
  * @author zhu56
- * @see com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper
+ * @see UpdateWrapper
  */
 public class UpdateExWrapper<T> extends AbstractWrapper<T, String, UpdateExWrapper<T>>
         implements CompareEx<UpdateExWrapper<T>, String>, UpdateEx<UpdateExWrapper<T>, String> {

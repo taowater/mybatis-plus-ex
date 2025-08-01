@@ -77,22 +77,6 @@ public class LambdaUpdateExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaU
     }
 
     @Override
-    public LambdaUpdateExWrapper<T> setIncrBy(boolean condition, SFunction<T, ?> column, Number val) {
-        return maybeDo(condition, () -> {
-            String realColumn = columnToString(column);
-            sqlSet.add(String.format("%s=%s + %s", realColumn, realColumn, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val));
-        });
-    }
-
-    @Override
-    public LambdaUpdateExWrapper<T> setDecrBy(boolean condition, SFunction<T, ?> column, Number val) {
-        return maybeDo(condition, () -> {
-            String realColumn = columnToString(column);
-            sqlSet.add(String.format("%s=%s - %s", realColumn, realColumn, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val));
-        });
-    }
-
-    @Override
     public String getSqlSet() {
         if (CollectionUtils.isEmpty(sqlSet)) {
             return null;
