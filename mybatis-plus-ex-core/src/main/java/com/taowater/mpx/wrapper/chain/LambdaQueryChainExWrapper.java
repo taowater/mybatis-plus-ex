@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.conditions.query.ChainQuery;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
+import com.taowater.mpx.wrapper.interfaces.ChainQueryEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.function.Predicate;
  * @see LambdaQueryChainWrapper
  */
 public class LambdaQueryChainExWrapper<T> extends AbstractChainExWrapper<T, SFunction<T, ?>, LambdaQueryChainExWrapper<T>, LambdaQueryExWrapper<T>>
-        implements ChainQuery<T>, QueryEx<LambdaQueryChainExWrapper<T>, T, SFunction<T, ?>> {
+        implements ChainQueryEx<T>, QueryEx<LambdaQueryChainExWrapper<T>, T, SFunction<T, ?>> {
 
     private final BaseMapper<T> baseMapper;
 

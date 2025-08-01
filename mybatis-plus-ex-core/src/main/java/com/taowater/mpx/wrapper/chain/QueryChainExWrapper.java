@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.toolkit.ExceptionUtils;
-import com.baomidou.mybatisplus.extension.conditions.query.ChainQuery;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.taowater.mpx.wrapper.QueryExWrapper;
+import com.taowater.mpx.wrapper.interfaces.ChainQueryEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  * @see QueryChainWrapper
  */
 public class QueryChainExWrapper<T> extends AbstractChainExWrapper<T, String, QueryChainExWrapper<T>, QueryExWrapper<T>>
-        implements ChainQuery<T>, QueryEx<QueryChainExWrapper<T>, T, String> {
+        implements ChainQueryEx<T>, QueryEx<QueryChainExWrapper<T>, T, String> {
 
     private final BaseMapper<T> baseMapper;
 

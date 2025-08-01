@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
+import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import com.taowater.taol.core.convert.ConvertUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
@@ -143,6 +144,24 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
             throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but more");
         }
         return list.get(0);
+    }
+
+    @Override
+    default T selectOne(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper, boolean throwEx) {
+        if (queryWrapper instanceof QueryEx<?, ?, ?>) {
+            ((QueryEx<?, ?, ?>) queryWrapper).limit(throwEx ? 2 : 1);
+        }
+        List<T> list = this.selectList(queryWrapper);
+        int size = list.size();
+        if (size == 1) {
+            return list.get(0);
+        } else if (size > 1) {
+            if (throwEx) {
+                throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + size);
+            }
+            return list.get(0);
+        }
+        return null;
     }
 
     /**

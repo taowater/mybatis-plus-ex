@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.override.MybatisMapperProxy;
 import com.baomidou.mybatisplus.core.toolkit.*;
+import com.baomidou.mybatisplus.extension.repository.AbstractRepository;
 import com.baomidou.mybatisplus.extension.repository.IRepository;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.taowater.mpx.mapper.BaseMapper;
@@ -29,7 +30,7 @@ import java.util.function.Function;
  * 生成的动态持久层操作
  *
  * @author zhu56
- * @see com.baomidou.mybatisplus.extension.repository.AbstractRepository
+ * @see AbstractRepository
  */
 @SuppressWarnings("unchecked")
 public abstract class DynamicRepository<T> implements IBaseRepository<T> {
