@@ -1,7 +1,6 @@
 package com.taowater.mpx.wrapper.chain;
 
 
-import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -22,35 +21,28 @@ import java.util.function.Predicate;
 public class LambdaQueryChainExWrapper<T> extends AbstractChainExWrapper<T, SFunction<T, ?>, LambdaQueryChainExWrapper<T>, LambdaQueryExWrapper<T>>
         implements ChainQueryEx<T>, QueryEx<LambdaQueryChainExWrapper<T>, T, SFunction<T, ?>> {
 
-    private final BaseMapper<T> baseMapper;
-
     public LambdaQueryChainExWrapper(BaseMapper<T> baseMapper) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = new LambdaQueryExWrapper<>();
     }
 
     public LambdaQueryChainExWrapper(Class<T> entityClass) {
-        super();
-        this.baseMapper = null;
+        super(null);
         super.wrapperChildren = new LambdaQueryExWrapper<>(entityClass);
     }
 
     public LambdaQueryChainExWrapper(BaseMapper<T> baseMapper, T entity) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = new LambdaQueryExWrapper<>(entity);
     }
 
     public LambdaQueryChainExWrapper(BaseMapper<T> baseMapper, Class<T> entityClass) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = new LambdaQueryExWrapper<>(entityClass);
     }
 
     public LambdaQueryChainExWrapper(BaseMapper<T> baseMapper, LambdaQueryExWrapper<T> wrapperChildren) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = wrapperChildren;
     }
 
@@ -86,16 +78,5 @@ public class LambdaQueryChainExWrapper<T> extends AbstractChainExWrapper<T, SFun
     protected LambdaQueryChainExWrapper<T> doSelect(boolean condition, List<SFunction<T, ?>> columns) {
         wrapperChildren.select(condition, columns);
         return typedThis;
-    }
-
-    @Override
-    public LambdaQueryChainExWrapper<T> addConditionCol(boolean condition, SFunction<T, ?> column1, SqlKeyword sqlKeyword, SFunction<T, ?> column2) {
-        wrapperChildren.addConditionCol(condition, column1, sqlKeyword, column2);
-        return typedThis;
-    }
-
-    @Override
-    public BaseMapper<T> getBaseMapper() {
-        return baseMapper;
     }
 }

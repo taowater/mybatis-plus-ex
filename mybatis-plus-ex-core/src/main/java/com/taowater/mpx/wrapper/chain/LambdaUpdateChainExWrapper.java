@@ -2,7 +2,6 @@ package com.taowater.mpx.wrapper.chain;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
@@ -13,26 +12,21 @@ import com.taowater.mpx.wrapper.interfaces.UpdateEx;
  *
  * @see LambdaUpdateChainWrapper
  */
-public class LambdaUpdateChainExWrapper<T> extends AbstractChainWrapper<T, SFunction<T, ?>, LambdaUpdateChainExWrapper<T>, LambdaUpdateExWrapper<T>>
+public class LambdaUpdateChainExWrapper<T> extends AbstractChainExWrapper<T, SFunction<T, ?>, LambdaUpdateChainExWrapper<T>, LambdaUpdateExWrapper<T>>
         implements ChainUpdate<T>, UpdateEx<LambdaUpdateChainExWrapper<T>, SFunction<T, ?>> {
 
-    private final BaseMapper<T> baseMapper;
-
     public LambdaUpdateChainExWrapper(BaseMapper<T> baseMapper) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = new LambdaUpdateExWrapper<>();
     }
 
     public LambdaUpdateChainExWrapper(Class<T> entityClass) {
-        super();
-        this.baseMapper = null;
+        super(null);
         super.wrapperChildren = new LambdaUpdateExWrapper<>(entityClass);
     }
 
     public LambdaUpdateChainExWrapper(BaseMapper<T> baseMapper, LambdaUpdateExWrapper<T> wrapperChildren) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = wrapperChildren;
     }
 
@@ -46,16 +40,6 @@ public class LambdaUpdateChainExWrapper<T> extends AbstractChainWrapper<T, SFunc
     public LambdaUpdateChainExWrapper<T> setSql(boolean condition, String setSql, Object... params) {
         wrapperChildren.setSql(condition, setSql, params);
         return typedThis;
-    }
-
-    @Override
-    public BaseMapper<T> getBaseMapper() {
-        return baseMapper;
-    }
-
-    @Override
-    public Class<T> getEntityClass() {
-        return super.wrapperChildren.getEntityClass();
     }
 
     @Override

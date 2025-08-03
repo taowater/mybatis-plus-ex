@@ -1,18 +1,24 @@
 package com.taowater.mpx.wrapper.chain;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlKeyword;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
-import com.taowater.mpx.wrapper.interfaces.CompareRequired;
 
 /**
  * 抽象链式wrapper
  *
  * @see AbstractChainWrapper
  */
-public abstract class AbstractChainExWrapper<T, R, Children extends AbstractChainExWrapper<T, R, Children, Param>, Param extends AbstractWrapper<T, R, Param> & CompareRequired<Param, R>>
+public abstract class AbstractChainExWrapper<T, R, Children extends AbstractChainExWrapper<T, R, Children, Param>, Param extends AbstractWrapper<T, R, Param> & CompareEx<Param, R>>
         extends AbstractChainWrapper<T, R, Children, Param> implements CompareEx<Children, R> {
 
+    private final BaseMapper<T> baseMapper;
+
+    protected AbstractChainExWrapper(BaseMapper<T> baseMapper) {
+        this.baseMapper = baseMapper;
+    }
 
     @Override
     public boolean needExecute() {
@@ -24,13 +30,17 @@ public abstract class AbstractChainExWrapper<T, R, Children extends AbstractChai
         wrapperChildren.setExecute(flag);
     }
 
-    public AbstractWrapper<T, R, Param> getWrapper() {
-        return wrapperChildren;
-    }
-
     public Class<T> getEntityClass() {
         return super.wrapperChildren.getEntityClass();
     }
 
+    public BaseMapper<T> getBaseMapper() {
+        return baseMapper;
+    }
 
+    @Override
+    public Children addConditionCol(boolean condition, R column1, SqlKeyword sqlKeyword, R column2) {
+        wrapperChildren.addConditionCol(condition, column1, sqlKeyword, column2);
+        return typedThis;
+    }
 }

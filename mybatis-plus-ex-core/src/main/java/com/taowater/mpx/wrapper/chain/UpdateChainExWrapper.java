@@ -1,6 +1,5 @@
 package com.taowater.mpx.wrapper.chain;
 
-import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.ExceptionUtils;
 import com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate;
@@ -16,17 +15,13 @@ import com.taowater.mpx.wrapper.interfaces.UpdateEx;
 public class UpdateChainExWrapper<T> extends AbstractChainExWrapper<T, String, UpdateChainExWrapper<T>, UpdateExWrapper<T>>
         implements ChainUpdate<T>, UpdateEx<UpdateChainExWrapper<T>, String> {
 
-    private final BaseMapper<T> baseMapper;
-
     public UpdateChainExWrapper(BaseMapper<T> baseMapper) {
-        super();
-        this.baseMapper = baseMapper;
+        super(baseMapper);
         super.wrapperChildren = new UpdateExWrapper<>();
     }
 
     public UpdateChainExWrapper(Class<T> entityClass) {
-        super();
-        this.baseMapper = null;
+        super(null);
         super.wrapperChildren = new UpdateExWrapper<>();
         super.setEntityClass(entityClass);
     }
@@ -54,22 +49,10 @@ public class UpdateChainExWrapper<T> extends AbstractChainExWrapper<T, String, U
         throw ExceptionUtils.mpe("can not use this method for \"%s\"", "getSqlSet");
     }
 
-    @Override
-    public BaseMapper<T> getBaseMapper() {
-        return baseMapper;
-    }
-
-
     public LambdaUpdateChainExWrapper<T> lambda() {
         return new LambdaUpdateChainExWrapper<>(
-                baseMapper,
+                getBaseMapper(),
                 wrapperChildren.lambda()
         );
-    }
-
-    @Override
-    public UpdateChainExWrapper<T> addConditionCol(boolean condition, String column1, SqlKeyword sqlKeyword, String column2) {
-        wrapperChildren.addConditionCol(condition, column1, sqlKeyword, column2);
-        return typedThis;
     }
 }
