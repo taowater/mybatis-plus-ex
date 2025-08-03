@@ -1,10 +1,8 @@
 package com.taowater.mpx.wrapper;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
@@ -12,7 +10,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import com.taowater.mpx.wrapper.interfaces.UpdateEx;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -27,18 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author zhu56
  * @see UpdateWrapper
  */
-public class UpdateExWrapper<T> extends AbstractWrapper<T, String, UpdateExWrapper<T>>
+public class UpdateExWrapper<T> extends AbstractExWrapper<T, String, UpdateExWrapper<T>>
         implements CompareEx<UpdateExWrapper<T>, String>, UpdateEx<UpdateExWrapper<T>, String> {
-    /**
-     * 是否需要查询
-     */
-    @Setter
-    private boolean execute = true;
-
-    @Override
-    public boolean needExecute() {
-        return execute;
-    }
 
     /**
      * SQL 更新字段内容，例如：name='1', age=2
@@ -71,22 +58,9 @@ public class UpdateExWrapper<T> extends AbstractWrapper<T, String, UpdateExWrapp
     }
 
 
-    /**
-     * 检查 SQL 注入过滤
-     */
-    private boolean checkSqlInjection;
-
-    /**
-     * 开启检查 SQL 注入
-     */
-    public UpdateExWrapper<T> checkSqlInjection() {
-        this.checkSqlInjection = true;
-        return this;
-    }
-
     @Override
     protected String columnToString(String column) {
-        if (checkSqlInjection && SqlInjectionUtils.check(column)) {
+        if (isCheckSqlInjection() && SqlInjectionUtils.check(column)) {
             throw new MybatisPlusException("Discovering SQL injection column: " + column);
         }
         return column;
@@ -147,11 +121,5 @@ public class UpdateExWrapper<T> extends AbstractWrapper<T, String, UpdateExWrapp
     @Override
     public UpdateExWrapper<T> self(boolean condition, String column, String keyword, Object val) {
         return maybeDo(condition, () -> sqlSet.add(MessageFormat.format("{0}={0}{1}{2}", columnToString(column), keyword, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val)));
-    }
-
-
-    public final UpdateExWrapper<T> addConditionCol(boolean condition, String column1, SqlKeyword sqlKeyword, String column2) {
-        return maybeDo(condition, () -> appendSqlSegments(columnToSqlSegment(column1), sqlKeyword,
-                columnToSqlSegment(column2)));
     }
 }

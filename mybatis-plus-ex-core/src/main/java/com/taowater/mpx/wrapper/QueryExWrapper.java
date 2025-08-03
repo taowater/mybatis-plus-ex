@@ -1,9 +1,7 @@
 package com.taowater.mpx.wrapper;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
@@ -27,22 +25,12 @@ import java.util.function.Predicate;
  * @see com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
  */
 @SuppressWarnings("unused")
-public class QueryExWrapper<T> extends AbstractWrapper<T, String, QueryExWrapper<T>>
+public class QueryExWrapper<T> extends AbstractExWrapper<T, String, QueryExWrapper<T>>
         implements CompareEx<QueryExWrapper<T>, String>, QueryEx<QueryExWrapper<T>, T, String> {
 
     @Setter
     @Getter
     private Integer limit;
-    /**
-     * 是否需要查询
-     */
-    @Setter
-    private boolean execute = true;
-
-    @Override
-    public boolean needExecute() {
-        return execute;
-    }
 
     /**
      * 查询字段
@@ -89,22 +77,9 @@ public class QueryExWrapper<T> extends AbstractWrapper<T, String, QueryExWrapper
     }
 
 
-    /**
-     * 检查 SQL 注入过滤
-     */
-    private boolean checkSqlInjection;
-
-    /**
-     * 开启检查 SQL 注入
-     */
-    public QueryExWrapper<T> checkSqlInjection() {
-        this.checkSqlInjection = true;
-        return this;
-    }
-
     @Override
     protected String columnToString(String column) {
-        if (checkSqlInjection && SqlInjectionUtils.check(column)) {
+        if (isCheckSqlInjection() && SqlInjectionUtils.check(column)) {
             throw new MybatisPlusException("Discovering SQL injection column: " + column);
         }
         return column;
@@ -154,10 +129,5 @@ public class QueryExWrapper<T> extends AbstractWrapper<T, String, QueryExWrapper
     public void clear() {
         super.clear();
         sqlSelect.toNull();
-    }
-
-    public final QueryExWrapper<T> addConditionCol(boolean condition, String column1, SqlKeyword sqlKeyword, String column2) {
-        return maybeDo(condition, () -> appendSqlSegments(columnToSqlSegment(column1), sqlKeyword,
-                columnToSqlSegment(column2)));
     }
 }
