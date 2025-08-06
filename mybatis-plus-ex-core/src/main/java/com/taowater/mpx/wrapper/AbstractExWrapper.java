@@ -2,6 +2,8 @@ package com.taowater.mpx.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
+import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,5 +43,16 @@ public abstract class AbstractExWrapper<T, R, Children extends AbstractExWrapper
     public Children addConditionCol(boolean condition, R column1, SqlKeyword sqlKeyword, R column2) {
         return maybeDo(condition, () -> appendSqlSegments(columnToSqlSegment(column1), sqlKeyword,
                 columnToSqlSegment(column2)));
+    }
+
+    @Override
+    protected String columnToString(R column) {
+        if (column instanceof String) {
+            if (isCheckSqlInjection() && SqlInjectionUtils.check((String) column)) {
+                throw new MybatisPlusException("Discovering SQL injection column: " + column);
+            }
+            return (String) column;
+        }
+        return super.columnToString(column);
     }
 }

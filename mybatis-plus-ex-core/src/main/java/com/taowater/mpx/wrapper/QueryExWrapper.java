@@ -2,12 +2,10 @@ package com.taowater.mpx.wrapper;
 
 import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import lombok.Getter;
@@ -74,15 +72,6 @@ public class QueryExWrapper<T> extends AbstractExWrapper<T, String, QueryExWrapp
         this.lastSql = lastSql;
         this.sqlComment = sqlComment;
         this.sqlFirst = sqlFirst;
-    }
-
-
-    @Override
-    protected String columnToString(String column) {
-        if (isCheckSqlInjection() && SqlInjectionUtils.check(column)) {
-            throw new MybatisPlusException("Discovering SQL injection column: " + column);
-        }
-        return column;
     }
 
     @Override
