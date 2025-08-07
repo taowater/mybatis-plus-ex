@@ -2,6 +2,7 @@ package com.taowater.mpx.autoconfigure;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
+import com.taowater.mpx.interceptor.ReturnTypeInterceptor;
 import com.taowater.mpx.method.ExMethodSqlInjector;
 import com.taowtaer.mpx.spring.entity.EntityScannerConfigurer;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,12 @@ public class MyBatisPlusExConfig {
     @ConditionalOnMissingBean(ExMethodSqlInjector.class)
     public ExMethodSqlInjector exMethodSqlInjector() {
         return new ExMethodSqlInjector();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ReturnTypeInterceptor.class)
+    public ReturnTypeInterceptor exInterceptor() {
+        return new ReturnTypeInterceptor();
     }
 
     public static class AutoConfiguredEntityScannerRegistrar

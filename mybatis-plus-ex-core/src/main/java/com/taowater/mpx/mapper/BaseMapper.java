@@ -1,22 +1,19 @@
 package com.taowater.mpx.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.taowater.mpx.constant.ExConstants;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import com.taowater.taol.core.convert.ConvertUtil;
-import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.TooManyResultsException;
-import org.apache.ibatis.session.SqlSession;
 
 import java.io.Serializable;
 import java.util.*;
@@ -55,6 +52,14 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     default List<T> selectList() {
         return this.selectList((Wrapper<T>) null);
     }
+
+    /**
+     * 查询列表
+     *
+     * @param queryWrapper 查询包装器
+     * @param returnType   返回类型
+     */
+    <DTO> List<DTO> selectList(@Param(ExConstants.RETURN_TYPE) Class<DTO> returnType, @Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
 
     /**
      * 查询列表
@@ -112,6 +117,16 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     }
 
     /**
+     * 查询一个，结果用Any包装
+     *
+     * @param returnType 返回类型
+     * @param consumer   操作符
+     */
+    default <D> Any<D> selectOneX(Class<D> returnType, Consumer<LambdaQueryExWrapper<T>> consumer) {
+        return Any.of(selectOne(returnType, consumer));
+    }
+
+    /**
      * 判断是否存在
      *
      * @param consumer 操作
@@ -131,37 +146,48 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * 查询一个
      *
+     * @param returnType 返回类型
+     * @param consumer   操作
+     */
+    default <D> D selectOne(Class<D> returnType, Consumer<LambdaQueryExWrapper<T>> consumer) {
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectOne(returnType, w, false), LambdaQueryExWrapper::new);
+    }
+
+    /**
+     * 查询一个
+     *
      * @param consumer 操作
      * @param throwEx  结果多个是否抛出异常
      */
     default T selectOne(Consumer<LambdaQueryExWrapper<T>> consumer, boolean throwEx) {
-        consumer = consumer.andThen(w -> w.limit(throwEx ? 2 : 1));
-        List<T> list = this.selectList(consumer);
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectOne(w, false), LambdaQueryExWrapper::new);
+    }
+
+    @Override
+    default T selectOne(Wrapper<T> queryWrapper, boolean throwEx) {
+        return selectOne(null, queryWrapper, throwEx);
+    }
+
+    /**
+     * 查询一个
+     *
+     * @param returnType   返回类型
+     * @param queryWrapper 查询包装器
+     * @param throwEx      结果多个是否抛出异常
+     */
+    default <D> D selectOne(Class<D> returnType, Wrapper<T> queryWrapper, boolean throwEx) {
+        if (queryWrapper instanceof QueryEx<?, ?, ?>) {
+            ((QueryEx<?, ?, ?>) queryWrapper).limit(throwEx ? 2 : 1);
+        }
+        List<D> list = this.selectList(returnType, queryWrapper);
+        int size = list.size();
         if (EmptyUtil.isEmpty(list)) {
             return null;
         }
         if (throwEx && list.size() > 1) {
-            throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but more");
+            throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + size);
         }
         return list.get(0);
-    }
-
-    @Override
-    default T selectOne(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper, boolean throwEx) {
-        if (queryWrapper instanceof QueryEx<?, ?, ?>) {
-            ((QueryEx<?, ?, ?>) queryWrapper).limit(throwEx ? 2 : 1);
-        }
-        List<T> list = this.selectList(queryWrapper);
-        int size = list.size();
-        if (size == 1) {
-            return list.get(0);
-        } else if (size > 1) {
-            if (throwEx) {
-                throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + size);
-            }
-            return list.get(0);
-        }
-        return null;
     }
 
     /**
@@ -266,19 +292,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
         return mapBy(field, values, e -> ConvertUtil.convert(e, clazzV));
     }
 
-    default <D> List<D> selectList(Wrapper<T> wrapper, Class<D> clazz) {
-        // 获取原始 Mapper 接口 Class（解决代理问题）
-        Class<T> entityClazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
-
-        Class<? extends BaseMapper<T>> mapperInterface = (Class<? extends BaseMapper<T>>) Ztream.of(this.getClass().getInterfaces()).filter(BaseMapper.class::isAssignableFrom).getFirst();
-        SqlSession sqlSession = SqlHelper.sqlSession(entityClazz);
-        // 从缓存获取或构建 MappedStatement
-        String msId = ExecuteHelper.buildDynamicMappedStatement(sqlSession.getConfiguration(), SqlMethod.SELECT_LIST, clazz, mapperInterface);
-
-        return sqlSession.selectList(msId, Collections.singletonMap(Constants.WRAPPER, wrapper));
-    }
-
-    default <D> List<D> selectList(Consumer<LambdaQueryExWrapper<T>> consumer, Class<D> clazz) {
-        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectList(w, clazz), LambdaQueryExWrapper::new);
+    default <D> List<D> selectList(Class<D> returnType, Consumer<LambdaQueryExWrapper<T>> consumer) {
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectList(returnType, w), LambdaQueryExWrapper::new);
     }
 }

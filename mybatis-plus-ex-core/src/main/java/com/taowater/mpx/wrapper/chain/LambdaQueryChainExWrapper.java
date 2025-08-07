@@ -1,11 +1,11 @@
 package com.taowater.mpx.wrapper.chain;
 
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.interfaces.ChainQueryEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;

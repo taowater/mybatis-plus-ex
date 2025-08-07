@@ -2,8 +2,8 @@ package com.taowater.mpx.wrapper.chain;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
+import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 
 /**

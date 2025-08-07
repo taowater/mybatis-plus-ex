@@ -1,7 +1,6 @@
 package com.taowtaer.mpx.spring.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -11,6 +10,7 @@ import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.chain.LambdaQueryChainExWrapper;
 import com.taowater.mpx.wrapper.chain.LambdaUpdateChainExWrapper;
 import com.taowater.mpx.wrapper.chain.QueryChainExWrapper;

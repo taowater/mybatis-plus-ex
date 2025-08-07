@@ -1,9 +1,9 @@
 package com.taowater.mpx.wrapper.chain;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.ExceptionUtils;
 import com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate;
 import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
+import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.UpdateExWrapper;
 import com.taowater.mpx.wrapper.interfaces.UpdateEx;
 

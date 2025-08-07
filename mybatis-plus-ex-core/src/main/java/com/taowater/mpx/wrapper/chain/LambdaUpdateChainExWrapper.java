@@ -1,9 +1,9 @@
 package com.taowater.mpx.wrapper.chain;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
+import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
 import com.taowater.mpx.wrapper.interfaces.UpdateEx;
 
