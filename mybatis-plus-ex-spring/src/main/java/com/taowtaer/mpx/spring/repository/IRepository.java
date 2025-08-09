@@ -519,7 +519,7 @@ interface IRepository<T> {
      * @return UpdateWrapper 的包装类
      */
     default UpdateChainExWrapper<T> update() {
-        return new UpdateChainExWrapper(getBaseMapper());
+        return new UpdateChainExWrapper<>(getBaseMapper());
     }
 
     /**

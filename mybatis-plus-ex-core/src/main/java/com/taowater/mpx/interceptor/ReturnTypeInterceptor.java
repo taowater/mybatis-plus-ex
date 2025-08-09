@@ -29,13 +29,15 @@ public class ReturnTypeInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        Object ew;
+        Object ew = null;
         Object[] args = invocation.getArgs();
         if (args[0] instanceof MappedStatement) {
             MappedStatement ms = (MappedStatement) args[0];
             if (args[1] instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) args[1];
-                ew = map.get(Constants.WRAPPER);
+                if (map.containsKey(Constants.WRAPPER)) {
+                    ew = map.get(Constants.WRAPPER);
+                }
                 Class<?> rt = null;
                 if (map.containsKey(ExConstants.RETURN_TYPE) && map.get(ExConstants.RETURN_TYPE) != null) {
                     rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
