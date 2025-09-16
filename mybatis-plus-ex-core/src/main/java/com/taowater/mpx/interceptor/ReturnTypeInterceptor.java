@@ -35,15 +35,14 @@ public class ReturnTypeInterceptor implements Interceptor {
             MappedStatement ms = (MappedStatement) args[0];
             if (args[1] instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) args[1];
-                if (map.containsKey(Constants.WRAPPER)) {
-                    ew = map.get(Constants.WRAPPER);
-                }
-                Class<?> rt = null;
-                if (map.containsKey(ExConstants.RETURN_TYPE) && map.get(ExConstants.RETURN_TYPE) != null) {
-                    rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
-                }
-                if (Objects.nonNull(rt)) {
-                    args[0] = getMappedStatement(ms, rt, ew, map);
+                if (map.containsKey(ExConstants.RETURN_TYPE)) {
+                    Class<?> rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
+                    if (Objects.nonNull(rt)) {
+                        if (map.containsKey(Constants.WRAPPER)) {
+                            ew = map.get(Constants.WRAPPER);
+                        }
+                        args[0] = getMappedStatement(ms, rt, ew, map);
+                    }
                 }
             }
         }
@@ -54,7 +53,7 @@ public class ReturnTypeInterceptor implements Interceptor {
     /**
      * 获取MappedStatement
      */
-    public <E> MappedStatement getMappedStatement(MappedStatement ms, Class<?> resultType, Object ew, Map<String, Object> map) {
+    public MappedStatement getMappedStatement(MappedStatement ms, Class<?> resultType, Object ew, Map<String, Object> map) {
 
         return buildMappedStatement(ms, resultType, ew);
     }

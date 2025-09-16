@@ -2,6 +2,7 @@ package com.taowtaer.mpx.spring.repository;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.taowater.mpx.mapper.BaseMapper;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
