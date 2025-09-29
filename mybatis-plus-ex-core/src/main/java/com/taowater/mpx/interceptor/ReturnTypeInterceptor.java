@@ -24,40 +24,31 @@ import java.util.Properties;
 @Intercepts(@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}))
 public class ReturnTypeInterceptor implements Interceptor {
 
-
     private static final Log log = LogFactory.getLog(ReturnTypeInterceptor.class);
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object ew = null;
         Object[] args = invocation.getArgs();
-        if (args[0] instanceof MappedStatement) {
-            MappedStatement ms = (MappedStatement) args[0];
-            if (args[1] instanceof Map) {
-                Map<String, Object> map = (Map<String, Object>) args[1];
-                if (map.containsKey(ExConstants.RETURN_TYPE)) {
-                    Class<?> rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
-                    if (Objects.nonNull(rt)) {
-                        if (map.containsKey(Constants.WRAPPER)) {
-                            ew = map.get(Constants.WRAPPER);
-                        }
-                        args[0] = getMappedStatement(ms, rt, ew, map);
-                    }
+        if (!(args[0] instanceof MappedStatement)) {
+            return invocation.proceed();
+        }
+        MappedStatement ms = (MappedStatement) args[0];
+        if (!(args[1] instanceof Map)) {
+            return invocation.proceed();
+        }
+        Map<String, Object> map = (Map<String, Object>) args[1];
+        if (map.containsKey(ExConstants.RETURN_TYPE)) {
+            Class<?> rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
+            if (Objects.nonNull(rt)) {
+                if (map.containsKey(Constants.WRAPPER)) {
+                    ew = map.get(Constants.WRAPPER);
                 }
+                args[0] = buildMappedStatement(ms, rt, ew);
             }
         }
         return invocation.proceed();
     }
-
-
-    /**
-     * 获取MappedStatement
-     */
-    public MappedStatement getMappedStatement(MappedStatement ms, Class<?> resultType, Object ew, Map<String, Object> map) {
-
-        return buildMappedStatement(ms, resultType, ew);
-    }
-
 
     /**
      * 构建新的MappedStatement
