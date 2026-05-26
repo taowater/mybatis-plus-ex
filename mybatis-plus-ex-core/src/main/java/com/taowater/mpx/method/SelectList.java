@@ -53,7 +53,7 @@ class SelectList extends AbstractMethod {
         switch (dbType) {
             case ORACLE:
             case ORACLE_12C:
-                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${limit}\n</script>", sqlFirst,
+                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${ew.limit}\n</script>", sqlFirst,
                         selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
             case SQL_SERVER:
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",

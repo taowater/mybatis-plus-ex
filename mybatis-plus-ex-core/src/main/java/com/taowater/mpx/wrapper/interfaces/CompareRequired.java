@@ -76,12 +76,12 @@ public interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
     }
 
     default W betweenR(R column, Object val1, Object val2) {
-        setExecute(needExecute() && EmptyUtil.isHadEmpty(val1, val2));
+        setExecute(needExecute() && EmptyUtil.isHadNotEmpty(val1, val2));
         return between(column, val1, val2);
     }
 
     default W notBetweenR(R column, Object val1, Object val2) {
-        setExecute(needExecute() && EmptyUtil.isHadEmpty(val1, val2));
+        setExecute(needExecute() && EmptyUtil.isHadNotEmpty(val1, val2));
         return notBetween(column, val1, val2);
     }
 
