@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.taowater.mpx.constant.ExConstants;
+import com.taowater.mpx.filter.WrapperUtil;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import com.taowater.taol.core.convert.ConvertUtil;
+import com.taowater.taol.core.reflect.ClassUtil;
+import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
 import com.taowater.ztream.Ztream;
@@ -72,13 +75,26 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     }
 
     /**
+     * 查询列表
+     */
+    default <P> List<T> selectList(P param) {
+        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
+        Wrapper<T> wrapper = WrapperUtil.getWrapper(clazz, param);
+        return selectList(wrapper);
+    }
+
+    /**
      * 分页查询
      *
      * @param page     分页参数
      * @param consumer 操作符
      */
     default <P extends IPage<T>> P selectPage(P page, Consumer<LambdaQueryExWrapper<T>> consumer) {
-        P result = ExecuteHelper.execute(this, consumer, (m, w) -> m.selectPage(page, w), LambdaQueryExWrapper::new);
+        P result = ExecuteHelper.execute(this, consumer, (m, w) -> {
+            // 分页场景下需要清楚可能存在的limit参数
+            w.setLimit(null);
+            return m.selectPage(page, w);
+        }, LambdaQueryExWrapper::new);
         return Any.of(result).orElse(page);
     }
 
@@ -202,12 +218,22 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     }
 
     /**
+     * 重写以支持自动填充
+     */
+    @Override
+    default int update(@Param(Constants.WRAPPER) Wrapper<T> updateWrapper) {
+        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
+        return update(ClassUtil.newInstance(clazz), updateWrapper);
+    }
+
+    /**
      * 更新操作
      *
      * @param consumer 操作
      */
     default int update(Consumer<LambdaUpdateExWrapper<T>> consumer) {
-        return update(null, consumer);
+        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
+        return update(ClassUtil.newInstance(clazz), consumer);
     }
 
     /**
