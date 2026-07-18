@@ -1,6 +1,8 @@
 package com.taowater.mpx.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.override.MybatisMapperProxy;
+import com.baomidou.mybatisplus.core.toolkit.MybatisUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareRequired;
 import com.taowater.taol.core.function.Function2;
 import com.taowater.taol.core.reflect.TypeUtil;
@@ -34,8 +36,8 @@ class ExecuteHelper {
         Objects.requireNonNull(fun, "fun");
         Objects.requireNonNull(wFun, "wFun");
 
-        // 获得该mapper操作的实体类型
-        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(mapper.getClass(), BaseMapper.class);
+        // 获得该mapper操作的实体类型（优先从 Mapper 接口泛型解析，避免 JDK/CGLIB 代理干扰）
+        Class<T> clazz = resolveEntityClass(mapper);
         // 获取wrapper对象
         W wrapper = wFun.apply(clazz);
         // 使用操作流程描述处理该wrapper得到最终查询的wrapper
@@ -52,5 +54,32 @@ class ExecuteHelper {
         }
         // 执行查询并返回结果
         return fun.apply(mapper, wrapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> resolveEntityClass(BaseMapper<T> mapper) {
+        try {
+            MybatisMapperProxy<?> proxy = MybatisUtils.getMybatisMapperProxy(mapper);
+            Class<?> mapperInterface = proxy.getMapperInterface();
+            Class<T> entity = (Class<T>) TypeUtil.getTypeArgument(mapperInterface, BaseMapper.class);
+            if (entity != null) {
+                return entity;
+            }
+        } catch (Throwable ignored) {
+            // 非代理或无法解析时回退
+        }
+        Class<T> entity = (Class<T>) TypeUtil.getTypeArgument(mapper.getClass(), BaseMapper.class);
+        if (entity != null) {
+            return entity;
+        }
+        for (Class<?> iface : mapper.getClass().getInterfaces()) {
+            if (BaseMapper.class.isAssignableFrom(iface)) {
+                entity = (Class<T>) TypeUtil.getTypeArgument(iface, BaseMapper.class);
+                if (entity != null) {
+                    return entity;
+                }
+            }
+        }
+        throw new IllegalStateException("Cannot resolve entity type from mapper: " + mapper.getClass().getName());
     }
 }

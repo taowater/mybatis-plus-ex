@@ -30,20 +30,24 @@ public class AnnotationUtil {
             return null;
         }
 
-        Annotation source = direct != null ? direct : candidate;
-
-        // 3. 收集原始属性
+        // 3. 收集目标注解的基础属性：
+        //    - 直接注解：直接读取自身；
+        //    - 组合注解：读取其类型上标注的元注解（如 @In 上的 @Filter），
+        //      以保留 operate 等未被外层注解声明的属性。
+        Annotation base = direct != null
+                ? direct
+                : candidate.annotationType().getAnnotation(annotationType);
         Map<String, Object> attributes = new HashMap<>();
-        for (Method m : source.annotationType().getDeclaredMethods()) {
+        for (Method m : annotationType.getDeclaredMethods()) {
             try {
-                attributes.put(m.getName(), m.invoke(source));
+                attributes.put(m.getName(), m.invoke(base));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
 
-        // 4. 处理跨注解 alias
+        // 4. 处理跨注解 alias（外层显式值覆盖元注解默认值）
         processAlias(el, annotationType, attributes);
 
         // 5. 动态代理返回最终注解对象

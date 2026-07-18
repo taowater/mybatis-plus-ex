@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -29,9 +28,19 @@ public class LambdaQueryExWrapper<T> extends AbstractLambdaExWrapper<T, LambdaQu
 
     private SharedString sqlSelect = new SharedString();
 
-    @Setter
     @Getter
     private Integer limit;
+
+    /**
+     * 设置 limit；{@code null} 表示不限制；负数非法（{@code ${ew.limit}} 仅允许非负整数）。
+     */
+    @Override
+    public void setLimit(Integer limit) {
+        if (limit != null && limit < 0) {
+            throw new IllegalArgumentException("limit must be >= 0, got: " + limit);
+        }
+        this.limit = limit;
+    }
 
     public LambdaQueryExWrapper() {
         this((T) null);

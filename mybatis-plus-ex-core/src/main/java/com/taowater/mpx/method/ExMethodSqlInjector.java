@@ -35,7 +35,7 @@ public class ExMethodSqlInjector extends DefaultSqlInjector {
         // 2. 添加自定义方法（DbType 仅探测一次并缓存，避免按表借连接）
         DbType type = resolveDbType(configuration);
         return Ztream.of(methodList)
-                .append(new SelectExists())
+                .append(new SelectExists(type))
                 .append(new SelectList(type))
                 .toList();
     }

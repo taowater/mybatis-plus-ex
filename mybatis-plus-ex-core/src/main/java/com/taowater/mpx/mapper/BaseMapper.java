@@ -1,5 +1,6 @@
 package com.taowater.mpx.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
@@ -147,7 +148,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param consumer 操作
      */
-    default boolean exists(Consumer<LambdaQueryExWrapper<T>> consumer) {
+    default boolean selectExists(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::selectExists, LambdaQueryExWrapper::new);
         return Objects.nonNull(result);
     }
@@ -192,9 +193,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param throwEx      结果多个是否抛出异常
      */
     default <D> D selectOne(Class<D> returnType, Wrapper<T> queryWrapper, boolean throwEx) {
-        if (queryWrapper instanceof QueryEx<?, ?, ?>) {
-            ((QueryEx<?, ?, ?>) queryWrapper).limit(throwEx ? 2 : 1);
-        }
+        applySelectOneLimit(queryWrapper, throwEx);
         List<D> list = this.selectList(returnType, queryWrapper);
         int size = list.size();
         if (EmptyUtil.isEmpty(list)) {
@@ -204,6 +203,23 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
             throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + size);
         }
         return list.get(0);
+    }
+
+    /**
+     * 为 selectOne 限制扫描行数：QueryEx 走方言 limit；其它 AbstractWrapper 追加 {@code LIMIT n}
+     * （Oracle 等非 LIMIT 方言请优先使用 QueryExWrapper / LambdaQueryExWrapper）。
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    static void applySelectOneLimit(Wrapper<?> queryWrapper, boolean throwEx) {
+        if (queryWrapper == null) {
+            return;
+        }
+        int n = throwEx ? 2 : 1;
+        if (queryWrapper instanceof QueryEx) {
+            ((QueryEx) queryWrapper).limit(n);
+        } else if (queryWrapper instanceof AbstractWrapper) {
+            ((AbstractWrapper) queryWrapper).last("LIMIT " + n);
+        }
     }
 
     /**

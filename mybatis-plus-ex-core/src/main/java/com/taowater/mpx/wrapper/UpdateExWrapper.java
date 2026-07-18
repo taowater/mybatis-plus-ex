@@ -9,8 +9,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import com.taowater.mpx.wrapper.interfaces.UpdateEx;
 
-import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +107,9 @@ public class UpdateExWrapper<T> extends AbstractExWrapper<T, String, UpdateExWra
      */
     @Override
     public UpdateExWrapper<T> self(boolean condition, String column, String keyword, Object val) {
-        return maybeDo(condition, () -> sqlSet.add(MessageFormat.format("{0}={0}{1}{2}", columnToString(column), keyword, val instanceof BigDecimal ? ((BigDecimal) val).toPlainString() : val)));
+        return maybeDo(condition, () -> {
+            String col = columnToString(column);
+            sqlSet.add(col + Constants.EQUALS + col + UpdateEx.safeKeyword(keyword) + formatParam(null, val));
+        });
     }
 }

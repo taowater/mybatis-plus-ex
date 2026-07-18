@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.taowater.mpx.wrapper.interfaces.CompareEx;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -26,9 +25,19 @@ import java.util.function.Predicate;
 public class QueryExWrapper<T> extends AbstractExWrapper<T, String, QueryExWrapper<T>>
         implements CompareEx<QueryExWrapper<T>, String>, QueryEx<QueryExWrapper<T>, T, String> {
 
-    @Setter
     @Getter
     private Integer limit;
+
+    /**
+     * 设置 limit；{@code null} 表示不限制；负数非法（{@code ${ew.limit}} 仅允许非负整数）。
+     */
+    @Override
+    public void setLimit(Integer limit) {
+        if (limit != null && limit < 0) {
+            throw new IllegalArgumentException("limit must be >= 0, got: " + limit);
+        }
+        this.limit = limit;
+    }
 
     /**
      * 查询字段

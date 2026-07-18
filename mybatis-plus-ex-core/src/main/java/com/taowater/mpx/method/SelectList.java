@@ -52,8 +52,10 @@ class SelectList extends AbstractMethod {
         switch (dbType) {
             case ORACLE:
             case ORACLE_12C:
-                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${ew.limit}\n</script>", sqlFirst,
-                        selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
+                // ROWNUM 限制仅在传入 limit 时追加，避免无 limit 时产生非法/意外 SQL
+                String rownum = SqlScriptUtils.convertIf(" WHERE ROWNUM <= ${ew.limit}", limitCondition(), true);
+                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n)%s\n</script>", sqlFirst,
+                        selectColumns, tableName, whereClause, sqlOrderBy, sqlComment, rownum);
             case SQL_SERVER:
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",
                         sqlFirst, sqlLimit, selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
@@ -63,6 +65,13 @@ class SelectList extends AbstractMethod {
         }
     }
 
+    /**
+     * limit 生效条件：ew 为扩展查询 wrapper 且其 limit 非空。
+     */
+    private String limitCondition() {
+        return String.format("%s != null and (ew instanceof com.taowater.mpx.wrapper.QueryExWrapper or ew instanceof com.taowater.mpx.wrapper.LambdaQueryExWrapper) and %s != null", WRAPPER, "ew.limit");
+    }
+
     protected String sqlLimit(DbType dbType) {
         String limitFormat = "LIMIT ${ew.limit}";
         if (dbType.equals(DbType.SQL_SERVER)) {
@@ -70,7 +79,7 @@ class SelectList extends AbstractMethod {
         } else if (dbType.equals(DbType.DB2)) {
             limitFormat = "FETCH FIRST ${ew.limit} ROWS ONLY";
         }
-        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, String.format("%s != null and (ew instanceof com.taowater.mpx.wrapper.QueryExWrapper or ew instanceof com.taowater.mpx.wrapper.LambdaQueryExWrapper) and %s != null", WRAPPER, "ew.limit"), true);
+        return NEWLINE + SqlScriptUtils.convertIf(limitFormat, limitCondition(), true);
     }
 
     /**

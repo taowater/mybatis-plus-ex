@@ -64,7 +64,7 @@ public interface ChainQueryEx<T> extends ChainQuery<T> {
      */
     @Override
     default boolean exists() {
-        return execute(mapper -> mapper.exists(getWrapper()));
+        return exe(mapper -> mapper.selectExists(getWrapper()) != null);
     }
 
     default <R> R exe(SFunction<BaseMapper<T>, R> function) {
