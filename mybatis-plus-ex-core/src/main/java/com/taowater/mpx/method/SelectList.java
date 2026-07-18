@@ -35,7 +35,6 @@ class SelectList extends AbstractMethod {
 
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
-        DbType dbType = getDbType();
         String sql = buildLimitSql(tableInfo);
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         return this.addSelectMappedStatementForTable(mapperClass, methodName, sqlSource, tableInfo);
@@ -53,7 +52,7 @@ class SelectList extends AbstractMethod {
         switch (dbType) {
             case ORACLE:
             case ORACLE_12C:
-                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${limit}\n</script>", sqlFirst,
+                return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n) WHERE ROWNUM <= ${ew.limit}\n</script>", sqlFirst,
                         selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
             case SQL_SERVER:
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",
@@ -75,7 +74,7 @@ class SelectList extends AbstractMethod {
     }
 
     /**
-     * 获取当前数据库类型（正确方式）
+     * 获取当前数据库类型；首次探测后缓存在实例字段，避免同一次注入内重复借连接。
      */
     private DbType getDbType() {
         if (Objects.nonNull(this.dbType)) {
@@ -85,11 +84,11 @@ class SelectList extends AbstractMethod {
         try {
             DataSource dataSource = configuration.getEnvironment().getDataSource();
             connection = dataSource.getConnection();
-            return JdbcUtils.getDbType(connection.getMetaData().getURL());
+            this.dbType = JdbcUtils.getDbType(connection.getMetaData().getURL());
+            return this.dbType;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to determine database type", e);
         } finally {
-            // 手动关闭连接（确保绝对释放）
             if (connection != null) {
                 try {
                     if (!connection.isClosed()) {

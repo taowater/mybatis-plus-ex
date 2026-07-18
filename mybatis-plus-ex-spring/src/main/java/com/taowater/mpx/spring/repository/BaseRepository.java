@@ -1,0 +1,15 @@
+package com.taowater.mpx.spring.repository;
+
+import com.baomidou.mybatisplus.spring.repository.CrudRepository;
+import com.taowater.mpx.mapper.BaseMapper;
+
+/**
+ * 基础持久层操作
+ *
+ * @author zhu56
+ * @see CrudRepository
+ */
+@SuppressWarnings("unused")
+public abstract class BaseRepository<M extends BaseMapper<T>, T> extends CrudRepository<M, T> implements IBaseRepository<T> {
+
+}

@@ -21,13 +21,16 @@ public abstract class AbstractExWrapper<T, R, Children extends AbstractExWrapper
     private boolean execute = true;
 
     /**
-     * 检查 SQL 注入过滤
+     * 检查 SQL 注入过滤（默认关闭）。
+     * <p>
+     * 对字符串列名条件（非 Lambda）建议显式调用 {@link #checkSqlInjection()}，
+     * 以防不可信输入拼入列名导致注入。
      */
     @Getter
     private boolean checkSqlInjection;
 
     /**
-     * 开启检查 SQL 注入
+     * 开启检查 SQL 注入（字符串列名场景推荐开启）
      */
     public Children checkSqlInjection() {
         this.checkSqlInjection = true;

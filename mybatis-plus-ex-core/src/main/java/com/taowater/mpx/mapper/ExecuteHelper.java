@@ -30,10 +30,9 @@ class ExecuteHelper {
     @SuppressWarnings("unchecked")
     public static <T, M extends BaseMapper<T>, W extends Wrapper<T>, R> R execute(M mapper, Consumer<W> operator, Function2<M, W, R> fun, Function<Class<T>, W> wFun) {
 
-        // 只有内部调用，直接断言
-        assert mapper != null;
-        assert fun != null;
-        assert wFun != null;
+        Objects.requireNonNull(mapper, "mapper");
+        Objects.requireNonNull(fun, "fun");
+        Objects.requireNonNull(wFun, "wFun");
 
         // 获得该mapper操作的实体类型
         Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(mapper.getClass(), BaseMapper.class);
