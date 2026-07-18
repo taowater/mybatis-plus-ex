@@ -1,12 +1,12 @@
-package com.taowtaer.mpx.spring.entity.generate;
+package com.taowater.mpx.spring.entity.generate;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.taowater.mpx.mapper.BaseMapper;
+import com.taowater.mpx.spring.entity.GenerateHelper;
 import com.taowater.taol.core.reflect.TypeUtil;
-import com.taowtaer.mpx.spring.entity.GenerateHelper;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -36,6 +36,22 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
 
     static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
+    @Getter
+    @Setter
+    private String sqlSessionFactoryBeanName;
+    @Getter
+    @Setter
+    private SqlSessionFactory sqlSessionFactory;
+    @Getter
+    @Setter
+    private String sqlSessionTemplateBeanName;
+    @Getter
+    @Setter
+    private SqlSessionTemplate sqlSessionTemplate;
+    @Getter
+    @Setter
+    private String defaultScope;
+
     public MapperGenerator(BeanDefinitionRegistry registry) {
         setRegistry(registry);
     }
@@ -53,12 +69,10 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends BaseMapper<?>> generate(Class<?> beanClass) {
-        return (Class<? extends BaseMapper<?>>) new ByteBuddy()
+        return (Class<? extends BaseMapper<?>>) GenerateHelper.loadMapper(new ByteBuddy()
                 .makeInterface(parameterizedType(BaseMapper.class, beanClass))
-                .name(String.format(GenerateHelper.template, "mapper", beanClass.getSimpleName(), "Mapper"))
-                .make()
-                .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
-                .getLoaded();
+                .name(GenerateHelper.className("mapper", beanClass, "Mapper"))
+                .make());
     }
 
     @Override
@@ -82,22 +96,26 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
             scopedProxy = true;
         }
         String beanClassName = definition.getBeanClassName();
-
-        definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
-        try {
-            Class<?> beanClass = Resources.classForName(beanClassName);
-            definition.setAttribute(FACTORY_BEAN_OBJECT_TYPE, beanClass);
-            definition.getPropertyValues().add("mapperInterface", beanClass);
-        } catch (ClassNotFoundException ignore) {
+        // WRAPPER 策略下类在子 ClassLoader，不能再按类名 Class.forName；优先用 BeanDefinition 上已有的 Class
+        Class<?> mapperInterface;
+        if (definition.hasBeanClass()) {
+            mapperInterface = definition.getBeanClass();
+        } else {
+            try {
+                mapperInterface = Resources.classForName(beanClassName);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("Cannot resolve mapper interface: " + beanClassName, e);
+            }
         }
+        definition.getConstructorArgumentValues().addGenericArgumentValue(mapperInterface);
+        definition.setAttribute(FACTORY_BEAN_OBJECT_TYPE, mapperInterface);
+        definition.getPropertyValues().add("mapperInterface", mapperInterface);
 
         definition.setBeanClass(MapperFactoryBean.class);
 
         definition.getPropertyValues().add("addToConfig", "true");
 
         boolean explicitFactoryUsed = false;
-        String sqlSessionFactoryBeanName = (String) ReflectUtil.getFieldValue(this, "sqlSessionFactoryBeanName");
-        SqlSessionFactory sqlSessionFactory = (SqlSessionFactory) ReflectUtil.getFieldValue(this, "sqlSessionFactory");
         if (StringUtils.hasText(sqlSessionFactoryBeanName)) {
             definition.getPropertyValues().add("sqlSessionFactory",
                     new RuntimeBeanReference(sqlSessionFactoryBeanName));
@@ -106,17 +124,11 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
             definition.getPropertyValues().add("sqlSessionFactory", sqlSessionFactory);
             explicitFactoryUsed = true;
         }
-        String sqlSessionTemplateBeanName = (String) ReflectUtil.getFieldValue(this, "sqlSessionTemplateBeanName");
-        SqlSessionTemplate sqlSessionTemplate = (SqlSessionTemplate) ReflectUtil.getFieldValue(this, "sqlSessionTemplate");
         if (StringUtils.hasText(sqlSessionTemplateBeanName)) {
-            if (explicitFactoryUsed) {
-            }
             definition.getPropertyValues().add("sqlSessionTemplate",
                     new RuntimeBeanReference(sqlSessionTemplateBeanName));
             explicitFactoryUsed = true;
         } else if (sqlSessionTemplate != null) {
-            if (explicitFactoryUsed) {
-            }
             definition.getPropertyValues().add("sqlSessionTemplate", sqlSessionTemplate);
             explicitFactoryUsed = true;
         }
@@ -130,8 +142,7 @@ public class MapperGenerator extends Generator<BaseMapper<?>> {
         if (scopedProxy) {
             return;
         }
-        String defaultScope = (String) ReflectUtil.getFieldValue(this, "defaultScope");
-        if (ConfigurableBeanFactory.SCOPE_SINGLETON.equals(definition.getScope()) && defaultScope != null) {
+        if (ConfigurableBeanFactory.SCOPE_SINGLETON.equals(definition.getScope()) && StringUtils.hasText(defaultScope)) {
             definition.setScope(defaultScope);
         }
 

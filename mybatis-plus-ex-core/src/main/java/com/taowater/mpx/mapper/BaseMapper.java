@@ -176,7 +176,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param throwEx  结果多个是否抛出异常
      */
     default T selectOne(Consumer<LambdaQueryExWrapper<T>> consumer, boolean throwEx) {
-        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectOne(w, false), LambdaQueryExWrapper::new);
+        return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectOne(w, throwEx), LambdaQueryExWrapper::new);
     }
 
     @Override

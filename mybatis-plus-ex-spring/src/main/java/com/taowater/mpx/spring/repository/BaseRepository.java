@@ -1,6 +1,6 @@
-package com.taowtaer.mpx.spring.repository;
+package com.taowater.mpx.spring.repository;
 
-import com.baomidou.mybatisplus.extension.repository.CrudRepository;
+import com.baomidou.mybatisplus.spring.repository.CrudRepository;
 import com.taowater.mpx.mapper.BaseMapper;
 
 /**

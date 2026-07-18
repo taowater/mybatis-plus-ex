@@ -1,6 +1,6 @@
-package com.taowtaer.mpx.spring.annotation;
+package com.taowater.mpx.spring.annotation;
 
-import com.taowtaer.mpx.spring.entity.generate.Generator;
+import com.taowater.mpx.spring.entity.generate.Generator;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 

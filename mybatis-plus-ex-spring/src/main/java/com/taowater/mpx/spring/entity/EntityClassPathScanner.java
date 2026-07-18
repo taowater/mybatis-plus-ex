@@ -1,15 +1,18 @@
-package com.taowtaer.mpx.spring.entity;
+package com.taowater.mpx.spring.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.taowater.mpx.spring.entity.generate.Generator;
+import com.taowater.mpx.spring.entity.generate.MapperGenerator;
+import com.taowater.mpx.spring.entity.generate.RepositoryGenerator;
+import com.taowater.mpx.spring.filter.AllFilter;
 import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.spring.entity.generate.Generator;
-import com.taowtaer.mpx.spring.entity.generate.MapperGenerator;
-import com.taowtaer.mpx.spring.entity.generate.RepositoryGenerator;
-import com.taowtaer.mpx.spring.filter.AllFilter;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -37,6 +40,21 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
 
     private Class<? extends Generator>[] generators;
 
+    @Getter
+    @Setter
+    private SqlSessionFactory sqlSessionFactory;
+    @Getter
+    @Setter
+    private SqlSessionTemplate sqlSessionTemplate;
+    @Getter
+    @Setter
+    private String sqlSessionFactoryBeanName;
+    @Getter
+    @Setter
+    private String sqlSessionTemplateBeanName;
+    @Getter
+    @Setter
+    private String defaultScope;
 
     private List<Generator<?>> gs() {
         List<? extends Generator<?>> otherGenerators = Ztream.of(generators).map(e -> {
@@ -45,8 +63,15 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
             return generator;
         }).toList();
 
+        MapperGenerator mapperGenerator = new MapperGenerator(getRegistry());
+        mapperGenerator.setSqlSessionFactory(sqlSessionFactory);
+        mapperGenerator.setSqlSessionTemplate(sqlSessionTemplate);
+        mapperGenerator.setSqlSessionFactoryBeanName(sqlSessionFactoryBeanName);
+        mapperGenerator.setSqlSessionTemplateBeanName(sqlSessionTemplateBeanName);
+        mapperGenerator.setDefaultScope(defaultScope);
+
         return Ztream.of(
-                new MapperGenerator(getRegistry()),
+                mapperGenerator,
                 new RepositoryGenerator(getRegistry())
         ).append(otherGenerators).toList();
     }
@@ -97,10 +122,17 @@ public class EntityClassPathScanner extends ClassPathScanningCandidateComponentP
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        Ztream.of(gs()).forEach(g -> Ztream.of(entities).forEach(g::handle));
+        int generated = 0;
+        for (Generator<?> g : gs()) {
+            for (Class<?> entity : entities) {
+                if (g.handle(entity)) {
+                    generated++;
+                }
+            }
+        }
         stopWatch.stop();
         BigDecimal scends = BigDecimal.valueOf(stopWatch.getTotalTimeSeconds()).setScale(3, RoundingMode.HALF_UP);
-        logger.info("Generated " + 0 + " Classes in " + scends + " seconds");
+        logger.info("Generated " + generated + " Classes in " + scends + " seconds");
     }
 
     @Override

@@ -56,7 +56,7 @@ public interface CompareRequired<W, R> extends Compare<W, R>, Func<W, R> {
     }
 
     default W gtR(R column, Object val) {
-        setExecute(EmptyUtil.isNotEmpty(val));
+        setExecute(needExecute() && EmptyUtil.isNotEmpty(val));
         return gt(column, val);
     }
 

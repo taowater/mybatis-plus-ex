@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.spring.entity;
+package com.taowater.mpx.spring.entity;
 
 import com.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.ResolvableType;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class BeanDefinitionUtil {
                     .nonNull()
                     .toList(ResolvableType::getType);
         }
-        return null;
+        return Collections.emptyList();
 
     }
 

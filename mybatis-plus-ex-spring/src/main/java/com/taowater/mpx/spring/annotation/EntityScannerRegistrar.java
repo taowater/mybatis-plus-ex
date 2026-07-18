@@ -1,7 +1,7 @@
-package com.taowtaer.mpx.spring.annotation;
+package com.taowater.mpx.spring.annotation;
 
+import com.taowater.mpx.spring.entity.EntityScannerConfigurer;
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.spring.entity.EntityScannerConfigurer;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanWrapper;
@@ -93,22 +93,31 @@ public class EntityScannerRegistrar implements ImportBeanDefinitionRegistrar, Be
             builder.addPropertyValue("defaultScope", "${mybatis-plus.mapper-default-scope:}");
         }
 
-        // for spring-native
-        Boolean injectSqlSession = environment.getProperty("mybatis-plus.inject-sql-session-on-mapper-scan", Boolean.class);
-        if (injectSqlSession == null) {
-            injectSqlSession = environment.getProperty("mybatis.inject-sql-session-on-mapper-scan", Boolean.class, Boolean.TRUE);
-        }
-        if (injectSqlSession && this.beanFactory instanceof ListableBeanFactory) {
-            ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
-            Optional<String> sqlSessionTemplateBeanName = Optional
-                    .ofNullable(getBeanNameForType(SqlSessionTemplate.class, listableBeanFactory));
-            Optional<String> sqlSessionFactoryBeanName = Optional
-                    .ofNullable(getBeanNameForType(SqlSessionFactory.class, listableBeanFactory));
-            if (sqlSessionTemplateBeanName.isPresent() || !sqlSessionFactoryBeanName.isPresent()) {
-                builder.addPropertyValue("sqlSessionTemplateBeanName",
-                        sqlSessionTemplateBeanName.orElse("sqlSessionTemplate"));
-            } else {
-                builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryBeanName.get());
+        // 优先使用 @EntityScan 显式指定的 SqlSession 引用
+        String sqlSessionTemplateRef = dynamicAttrs.getString("sqlSessionTemplateRef");
+        String sqlSessionFactoryRef = dynamicAttrs.getString("sqlSessionFactoryRef");
+        if (StringUtils.hasText(sqlSessionTemplateRef)) {
+            builder.addPropertyValue("sqlSessionTemplateBeanName", sqlSessionTemplateRef);
+        } else if (StringUtils.hasText(sqlSessionFactoryRef)) {
+            builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryRef);
+        } else {
+            // for spring-native：自动探测容器中的 SqlSession
+            Boolean injectSqlSession = environment.getProperty("mybatis-plus.inject-sql-session-on-mapper-scan", Boolean.class);
+            if (injectSqlSession == null) {
+                injectSqlSession = environment.getProperty("mybatis.inject-sql-session-on-mapper-scan", Boolean.class, Boolean.TRUE);
+            }
+            if (injectSqlSession && this.beanFactory instanceof ListableBeanFactory) {
+                ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
+                Optional<String> sqlSessionTemplateBeanName = Optional
+                        .ofNullable(getBeanNameForType(SqlSessionTemplate.class, listableBeanFactory));
+                Optional<String> sqlSessionFactoryBeanName = Optional
+                        .ofNullable(getBeanNameForType(SqlSessionFactory.class, listableBeanFactory));
+                if (sqlSessionTemplateBeanName.isPresent() || !sqlSessionFactoryBeanName.isPresent()) {
+                    builder.addPropertyValue("sqlSessionTemplateBeanName",
+                            sqlSessionTemplateBeanName.orElse("sqlSessionTemplate"));
+                } else {
+                    builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryBeanName.get());
+                }
             }
         }
         builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);

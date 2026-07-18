@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.spring.annotation;
+package com.taowater.mpx.spring.annotation;
 
 import org.springframework.context.annotation.Import;
 

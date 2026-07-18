@@ -1,8 +1,8 @@
-package com.taowtaer.mpx.spring.entity.generate;
+package com.taowater.mpx.spring.entity.generate;
 
+import com.taowater.mpx.spring.entity.BeanDefinitionUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.ztream.Ztream;
-import com.taowtaer.mpx.spring.entity.BeanDefinitionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
@@ -111,16 +111,18 @@ public abstract class Generator<T> {
         return map;
     }
 
-    public final void handle(Class<?> beanClazz) {
+    public final boolean handle(Class<?> beanClazz) {
 
         if (!map().containsKey(beanClazz)) {
             Class<?> generated = generate(beanClazz);
             if (Objects.isNull(generated)) {
-                return;
+                return false;
             }
             BeanDefinitionHolder holder = simpleBdHolder(generated);
             after(holder);
             getLog().info("Generate " + name() + " for " + beanClazz.getName());
+            return true;
         }
+        return false;
     }
 }

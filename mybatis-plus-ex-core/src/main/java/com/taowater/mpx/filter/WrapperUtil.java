@@ -31,7 +31,9 @@ public class WrapperUtil {
         TableInfo info = TableInfoHelper.getTableInfo(clazz);
 
         if (Objects.isNull(info)) {
-            return null;
+            throw new IllegalStateException(
+                    "No TableInfo for entity " + clazz.getName()
+                            + "; ensure the class is a MyBatis-Plus entity (e.g. @TableName) and has been initialized");
         }
 
         Map<String, TableFieldInfo> entityFieldMap = Ztream.of(info.getFieldList()).toMap(TableFieldInfo::getProperty);

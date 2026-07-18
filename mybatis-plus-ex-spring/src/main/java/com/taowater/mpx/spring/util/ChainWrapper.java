@@ -1,4 +1,4 @@
-package com.taowtaer.mpx.spring.util;
+package com.taowater.mpx.spring.util;
 
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.taowater.mpx.mapper.BaseMapper;

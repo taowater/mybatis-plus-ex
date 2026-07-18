@@ -1,10 +1,9 @@
-package com.taowtaer.mpx.spring.entity.generate;
+package com.taowater.mpx.spring.entity.generate;
 
+import com.taowater.mpx.spring.entity.GenerateHelper;
+import com.taowater.mpx.spring.repository.DynamicRepository;
 import com.taowater.taol.core.reflect.TypeUtil;
-import com.taowtaer.mpx.spring.entity.GenerateHelper;
-import com.taowtaer.mpx.spring.repository.DynamicRepository;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 import java.lang.reflect.Type;
@@ -34,16 +33,14 @@ public class RepositoryGenerator extends Generator<DynamicRepository<?>> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends DynamicRepository<?>> generate(Class<?> beanClass) {
-        return (Class<? extends DynamicRepository<?>>) new ByteBuddy()
+        return (Class<? extends DynamicRepository<?>>) GenerateHelper.loadRepository(new ByteBuddy()
                 .subclass(
                         parameterizedType(
                                 DynamicRepository.class,
                                 beanClass
                         )
                 )
-                .name(String.format(GenerateHelper.template, "repository", beanClass.getSimpleName(), "Repository"))
-                .make()
-                .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
-                .getLoaded();
+                .name(GenerateHelper.className("repository", beanClass, "Repository"))
+                .make());
     }
 }

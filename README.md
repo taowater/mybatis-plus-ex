@@ -28,4 +28,14 @@
 </dependency>
 ```
 
+### 安全提示
+
+字符串列名条件（非 Lambda）默认**不**开启 SQL 注入校验。对不可信输入拼入列名时，请显式调用：
+
+```java
+new QueryExWrapper<>(Entity.class).checkSqlInjection().eq("user_name", name);
+```
+
+Lambda 列名由实体元数据解析，一般无需额外校验。
+
 [![Star History Chart](https://api.star-history.com/svg?repos=taowater/mybatis-plus-ex&type=Date)](https://star-history.com/#taowater/mybatis-plus-ex&Date)
