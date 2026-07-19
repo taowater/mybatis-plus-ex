@@ -22,7 +22,7 @@
     <url>https://github.com/taowater/mybatis-plus-ex</url>
 
     <properties>
-        <revision>0.5.0</revision>
+        <revision>0.5.1</revision>
         <java.version>8</java.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -43,7 +43,7 @@
         <lombok.version>1.18.46</lombok.version>
         <hutool.version>5.8.46</hutool.version>
         <byte-buddy.version>1.18.2</byte-buddy.version>
-        <ztream.version>0.3.0</ztream.version>
+        <ztream.version>0.3.1</ztream.version>
         <spring.version>5.3.39</spring.version>
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
     </properties>
