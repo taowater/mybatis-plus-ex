@@ -1,10 +1,6 @@
 package com.taowater.mpx.filter;
 
-import com.taowater.mpx.filter.op.Eq;
-import com.taowater.mpx.filter.op.Filter;
-import com.taowater.mpx.filter.op.In;
-import com.taowater.mpx.filter.op.Like;
-import com.taowater.mpx.filter.op.NotIn;
+import com.taowater.mpx.filter.op.*;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -30,7 +26,7 @@ class FilterAnnTest {
         @Eq
         Integer age;
 
-        @Filter(operate = Operator.NE, field = "status", filter = FilterStrategy.ALLWAYS)
+        @Filter(operate = Operator.NE, field = "status", filter = FilterStrategy.ALWAYS)
         Integer status;
 
         @NotIn(field = "id", filter = FilterStrategy.IGNORE)
@@ -77,8 +73,9 @@ class FilterAnnTest {
         FilterAnn a = of("status");
         assertThat(a.getOperate()).isEqualTo(Operator.NE);
         assertThat(a.getField()).isEqualTo("status");
-        assertThat(a.getStrategy()).isEqualTo(FilterStrategy.ALLWAYS);
+        assertThat(a.getStrategy()).isEqualTo(FilterStrategy.ALWAYS);
     }
+
 
     @Test
     void notIn_strategyFromOuterInstance() throws Exception {

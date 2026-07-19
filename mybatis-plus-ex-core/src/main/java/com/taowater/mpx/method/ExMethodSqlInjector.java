@@ -49,9 +49,15 @@ public class ExMethodSqlInjector extends DefaultSqlInjector {
             if (this.dbType != null) {
                 return this.dbType;
             }
+            // Environment / DataSource 尚未就绪（多见于测试或早期初始化）时，回退默认方言且不缓存，
+            // 以便后续真正就绪后仍能正确探测。
+            DataSource dataSource = configuration.getEnvironment() == null
+                    ? null : configuration.getEnvironment().getDataSource();
+            if (dataSource == null) {
+                return DbType.OTHER;
+            }
             Connection connection = null;
             try {
-                DataSource dataSource = configuration.getEnvironment().getDataSource();
                 connection = dataSource.getConnection();
                 this.dbType = JdbcUtils.getDbType(connection.getMetaData().getURL());
                 return this.dbType;

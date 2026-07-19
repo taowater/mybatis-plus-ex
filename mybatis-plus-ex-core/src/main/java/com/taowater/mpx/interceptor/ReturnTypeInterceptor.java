@@ -11,10 +11,10 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 用于实现动态 resultType
@@ -24,9 +24,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReturnTypeInterceptor implements Interceptor {
 
     /**
-     * 按 (statementId + resultType) 缓存已构建的 MappedStatement，避免每次查询重建。
+     * 缓存上限。(statementId + resultType) 组合在正常使用下有限，
+     * 但为防御动态/异常场景无限增长，采用带容量上限的 LRU。
      */
-    private final Map<String, MappedStatement> mappedStatementCache = new ConcurrentHashMap<>();
+    private static final int MAX_CACHE_SIZE = 1024;
+
+    /**
+     * 按 (statementId + resultType) 缓存已构建的 MappedStatement，避免每次查询重建。
+     * <p>
+     * 使用访问顺序的 LRU，并在超过 {@link #MAX_CACHE_SIZE} 时淘汰最久未用项，避免无界增长。
+     */
+    private final Map<String, MappedStatement> mappedStatementCache = Collections.synchronizedMap(
+            new LinkedHashMap<String, MappedStatement>(256, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, MappedStatement> eldest) {
+                    return size() > MAX_CACHE_SIZE;
+                }
+            });
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {

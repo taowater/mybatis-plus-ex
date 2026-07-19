@@ -4,33 +4,29 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlScriptUtils;
-import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * 查询满足条件所有数据
  * 支持limit
+ * <p>
+ * 方言由 {@link ExMethodSqlInjector} 注入，本类不再自行探测 DbType。
  *
  * @author zhu56
  */
 @SuppressWarnings("unused")
 class SelectList extends AbstractMethod {
 
-    private DbType dbType;
+    private final DbType dbType;
 
     public SelectList() {
-        super(SqlExMethod.SELECT_LIST.getMethod());
+        this(DbType.OTHER);
     }
 
     public SelectList(DbType dbType) {
         super(SqlExMethod.SELECT_LIST.getMethod());
-        this.dbType = dbType;
+        this.dbType = dbType == null ? DbType.OTHER : dbType;
     }
 
     @Override
@@ -42,7 +38,6 @@ class SelectList extends AbstractMethod {
 
     private String buildLimitSql(TableInfo tableInfo) {
         String sqlFirst = sqlFirst();
-        DbType dbType = getDbType();
         String selectColumns = sqlSelectColumns(tableInfo, true);
         String tableName = tableInfo.getTableName();
         String whereClause = sqlWhereEntityWrapper(true, tableInfo);
@@ -74,38 +69,11 @@ class SelectList extends AbstractMethod {
 
     protected String sqlLimit(DbType dbType) {
         String limitFormat = "LIMIT ${ew.limit}";
-        if (dbType.equals(DbType.SQL_SERVER)) {
+        if (dbType == DbType.SQL_SERVER) {
             limitFormat = "TOP ${ew.limit}";
-        } else if (dbType.equals(DbType.DB2)) {
+        } else if (dbType == DbType.DB2) {
             limitFormat = "FETCH FIRST ${ew.limit} ROWS ONLY";
         }
         return NEWLINE + SqlScriptUtils.convertIf(limitFormat, limitCondition(), true);
-    }
-
-    /**
-     * 获取当前数据库类型；首次探测后缓存在实例字段，避免同一次注入内重复借连接。
-     */
-    private DbType getDbType() {
-        if (Objects.nonNull(this.dbType)) {
-            return this.dbType;
-        }
-        Connection connection = null;
-        try {
-            DataSource dataSource = configuration.getEnvironment().getDataSource();
-            connection = dataSource.getConnection();
-            this.dbType = JdbcUtils.getDbType(connection.getMetaData().getURL());
-            return this.dbType;
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to determine database type", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    if (!connection.isClosed()) {
-                        connection.close();
-                    }
-                } catch (SQLException ignored) {
-                }
-            }
-        }
     }
 }

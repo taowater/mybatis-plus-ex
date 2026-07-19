@@ -64,6 +64,14 @@ public class MyBatisPlusExConfig {
     public static class AutoConfiguredEntityScannerRegistrar
             implements BeanFactoryAware, EnvironmentAware, ImportBeanDefinitionRegistrar {
 
+        /**
+         * 是否开启实体自动扫描/生成（默认 true）
+         */
+        static final String ENTITY_SCAN_ENABLED = "mybatis-plus-ex.entity-scan.enabled";
+        /**
+         * 收窄自动扫描的基础包（逗号分隔）；未配置时回退到 {@link AutoConfigurationPackages}
+         */
+        static final String ENTITY_SCAN_BASE_PACKAGES = "mybatis-plus-ex.entity-scan.base-packages";
 
         private BeanFactory beanFactory;
         private Environment environment;
@@ -71,16 +79,31 @@ public class MyBatisPlusExConfig {
         @Override
         public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
-            if (!AutoConfigurationPackages.has(this.beanFactory)) {
-                log.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.");
+            // 开关：默认开启；置为 false 可完全关闭实体自动扫描/生成
+            Boolean enabled = environment.getProperty(ENTITY_SCAN_ENABLED, Boolean.class, Boolean.TRUE);
+            if (Boolean.FALSE.equals(enabled)) {
+                log.debug("Entity auto-scan disabled by '{}=false'.", ENTITY_SCAN_ENABLED);
                 return;
             }
 
-            log.debug("Searching for mappers annotated with @Mapper");
+            // 允许显式收窄扫描包，避免默认扫描全部 AutoConfigurationPackages
+            List<String> packages;
+            String configuredPackages = environment.getProperty(ENTITY_SCAN_BASE_PACKAGES);
+            if (StringUtils.hasText(configuredPackages)) {
+                packages = Stream.of(StringUtils.commaDelimitedListToStringArray(configuredPackages))
+                        .map(String::trim)
+                        .filter(StringUtils::hasText)
+                        .collect(Collectors.toList());
+            } else {
+                if (!AutoConfigurationPackages.has(this.beanFactory)) {
+                    log.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.");
+                    return;
+                }
+                packages = AutoConfigurationPackages.get(this.beanFactory);
+            }
 
-            List<String> packages = AutoConfigurationPackages.get(this.beanFactory);
             if (log.isDebugEnabled()) {
-                packages.forEach(pkg -> log.debug("Using auto-configuration base package '{}'", pkg));
+                packages.forEach(pkg -> log.debug("Using entity-scan base package '{}'", pkg));
             }
             Class<?> configurerClass = EntityScannerConfigurer.class;
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(configurerClass);

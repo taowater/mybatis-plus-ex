@@ -2,6 +2,8 @@ package com.taowater.mpx.spring.entity;
 
 import com.taowater.ztream.Ztream;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -22,6 +24,8 @@ import java.util.Objects;
  */
 @UtilityClass
 public class BeanDefinitionUtil {
+
+    private static final Log log = LogFactory.getLog(BeanDefinitionUtil.class);
 
     public static List<Type> find(BeanDefinitionRegistry registry, Class<?> clazz) {
         if (registry instanceof ListableBeanFactory) {
@@ -52,7 +56,9 @@ public class BeanDefinitionUtil {
                 }
             }
         } catch (Exception e) {
-            // 处理异常
+            if (log.isDebugEnabled()) {
+                log.debug("Failed to resolve ResolvableType for bean '" + beanName + "': " + e.getMessage(), e);
+            }
         }
         return null;
     }

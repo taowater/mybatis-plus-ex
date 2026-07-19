@@ -14,19 +14,19 @@ import java.util.function.Predicate;
 public enum FilterStrategy {
 
     /**
-     * 忽视
+     * 忽略：无论是否有值都不参与条件
      */
     IGNORE(o -> false),
     /**
-     * 忽略空
+     * 忽略空值：仅当值非空时才参与条件
      */
     IGNORE_EMPTY(EmptyUtil::isNotEmpty),
     /**
-     * 所有
+     * 总是参与条件（含空值）
      */
-    ALLWAYS(o -> true),
+    ALWAYS(o -> true),
     /**
-     * 如果为空，则返回空
+     * 值为空时短路，整个查询返回空结果
      */
     RETURN_EMPTY_IF_EMPTY(EmptyUtil::isNotEmpty),
     ;
@@ -35,6 +35,5 @@ public enum FilterStrategy {
      * 策略判断是否组装的方法
      */
     private final Predicate<Object> predicate;
-
 
 }

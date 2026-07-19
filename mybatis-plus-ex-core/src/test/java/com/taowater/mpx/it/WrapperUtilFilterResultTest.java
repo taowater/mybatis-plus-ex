@@ -167,7 +167,7 @@ class WrapperUtilFilterResultTest extends AbstractH2MybatisTest {
 
     @Test
     void always_nullEq_stillAppliesCondition_returnsEmpty() {
-        // ALLWAYS + eq null：条件仍组装，库中无 name IS NULL 行
+        // ALWAYS + eq null：条件仍组装，库中无 name IS NULL 行
         AlwaysEqQuery q = new AlwaysEqQuery();
         q.setName(null);
         assertThat(names(q)).isEmpty();
@@ -257,7 +257,7 @@ class WrapperUtilFilterResultTest extends AbstractH2MybatisTest {
 
     @Data
     static class AlwaysEqQuery {
-        @Eq(filter = FilterStrategy.ALLWAYS)
+        @Eq(filter = FilterStrategy.ALWAYS)
         private String name;
     }
 
