@@ -41,11 +41,11 @@
         <junit.version>5.11.4</junit.version>
         <junit-platform.version>1.11.4</junit-platform.version>
         <lombok.version>1.18.46</lombok.version>
-        <hutool.version>5.8.46</hutool.version>
+        <hutool.version>5.8.47</hutool.version>
         <byte-buddy.version>1.18.2</byte-buddy.version>
-        <ztream.version>0.3.1</ztream.version>
+        <ztream.version>0.3.2</ztream.version>
         <spring.version>5.3.39</spring.version>
-        <mybatis-plus.version>3.5.17</mybatis-plus.version>
+        <mybatis-plus.version>3.5.18</mybatis-plus.version>
     </properties>
 
     <dependencyManagement>

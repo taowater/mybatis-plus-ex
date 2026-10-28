@@ -32,7 +32,8 @@ class SelectList extends AbstractMethod {
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
         String sql = buildLimitSql(tableInfo);
-        SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
+        // 与默认注入方法一致，规范化脚本空白，避免分页解析器截断逻辑删除后的条件。
+        SqlSource sqlSource = createSqlSource(configuration, sql, modelClass);
         return this.addSelectMappedStatementForTable(mapperClass, methodName, sqlSource, tableInfo);
     }
 
@@ -56,7 +57,7 @@ class SelectList extends AbstractMethod {
                         sqlFirst, sqlLimit, selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
             default:
                 return String.format(SqlExMethod.SELECT_LIST.getSql(),
-                        sqlFirst, selectColumns, tableInfo.getTableName(), whereClause, sqlOrderBy, sqlLimit, sqlComment);
+                        sqlFirst, selectColumns, tableName, whereClause, sqlOrderBy, sqlLimit, sqlComment);
         }
     }
 

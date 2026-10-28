@@ -51,6 +51,19 @@ public interface PersonMapper extends BaseMapper<Person> {
 }
 ```
 
+#### BaseMapper 注入诊断
+
+使用 `mybatis-plus-ex-spring` 的实体扫描配置（Boot Starter 默认开启）时，框架会自动增强
+`@Autowired BaseMapper<T>` 的缺失 Bean 提示。实体未被扫描或动态 Mapper 生成失败时，启动异常会包含
+具体实体、注入字段和宿主 Service，例如：
+
+```text
+No generated BaseMapper bean found for entity com.example.User ...
+Required by ...BaseAdminServiceImpl.baseMapper ...
+```
+
+因此无需为获得实体信息而修改业务 Service 的注入写法；`@Lazy` 注入在首次调用失败时也会输出相同的实体诊断信息。
+
 #### 条件组装增强示例
 
 ```java

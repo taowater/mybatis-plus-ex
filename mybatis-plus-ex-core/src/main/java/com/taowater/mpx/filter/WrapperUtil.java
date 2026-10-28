@@ -1,6 +1,5 @@
 package com.taowater.mpx.filter;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
@@ -21,7 +20,7 @@ import java.util.function.Function;
 @SuppressWarnings("unchecked")
 public class WrapperUtil {
 
-    public static <T, P> Wrapper<T> getWrapper(Class<T> clazz, P param) {
+    public static <T, P> QueryExWrapper<T> getWrapper(Class<T> clazz, P param) {
         QueryExWrapper<T> wrapper = new QueryExWrapper<>(clazz);
         if (Objects.isNull(param)) {
             return wrapper;

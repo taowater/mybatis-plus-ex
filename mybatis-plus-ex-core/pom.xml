@@ -79,6 +79,13 @@
             <version>2.2.224</version>
             <scope>test</scope>
         </dependency>
+        <!-- 分页 COUNT 依赖；字节码为 Java 11+，仅测试使用，需 JDK 11+ 运行相关用例 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <version>${mybatis-plus.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- MybatisUtils 等类静态依赖 slf4j；logback 作为测试期绑定，消除 NOP 警告 -->
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -32,23 +32,23 @@ public interface CompareIfNotEmpty<W, R> extends Compare<W, R>, Func<W, R> {
     }
 
     default W eqX(R column, Object val) {
-        return this.eq(EmptyUtil.isNotEmpty(val), column, val);
+        return eq(EmptyUtil.isNotEmpty(val), column, val);
     }
 
     default W neX(R column, Object val) {
-        return this.ne(EmptyUtil.isNotEmpty(val), column, val);
+        return ne(EmptyUtil.isNotEmpty(val), column, val);
     }
 
     default W gtX(R column, Object val) {
-        return this.gt(EmptyUtil.isNotEmpty(val), column, val);
+        return gt(EmptyUtil.isNotEmpty(val), column, val);
     }
 
     default W geX(R column, Object val) {
-        return this.ge(EmptyUtil.isNotEmpty(val), column, val);
+        return ge(EmptyUtil.isNotEmpty(val), column, val);
     }
 
     default W ltX(R column, Object val) {
-        return this.lt(EmptyUtil.isNotEmpty(val), column, val);
+        return lt(EmptyUtil.isNotEmpty(val), column, val);
     }
 
     default W leX(R column, Object val) {

@@ -3,7 +3,8 @@ package com.taowater.mpx.wrapper.interfaces;
 
 import com.baomidou.mybatisplus.core.conditions.update.Update;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
-import com.taowater.taol.core.util.EmptyUtil;
+
+import java.util.Objects;
 
 /**
  * 更新操作-包含自更新操作
@@ -110,7 +111,7 @@ public interface UpdateEx<W, R> extends Update<W, R> {
      * @return {@link W}
      */
     default <N extends Number> W setIncrByX(R column, N increment) {
-        return setIncrBy(EmptyUtil.isNotEmpty(increment), column, increment);
+        return setIncrBy(Objects.nonNull(increment), column, increment);
     }
 
     /**
@@ -121,6 +122,6 @@ public interface UpdateEx<W, R> extends Update<W, R> {
      * @return {@link W}
      */
     default <N extends Number> W setDecrByX(R column, N decrement) {
-        return setDecrBy(EmptyUtil.isNotEmpty(decrement), column, decrement);
+        return setDecrBy(Objects.nonNull(decrement), column, decrement);
     }
 }

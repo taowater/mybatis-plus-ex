@@ -9,6 +9,7 @@ import com.taowater.mpx.constant.ExConstants;
 import com.taowater.mpx.filter.WrapperUtil;
 import com.taowater.mpx.wrapper.LambdaQueryExWrapper;
 import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
+import com.taowater.mpx.wrapper.QueryExWrapper;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import com.taowater.taol.core.convert.ConvertUtil;
 import com.taowater.taol.core.reflect.ClassUtil;
@@ -46,7 +47,10 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default Long selectCount(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Long result = ExecuteHelper.execute(this, consumer, BaseMapper::selectCount, LambdaQueryExWrapper::new);
-        return Any.of(result).orElse(0L);
+        if (Objects.isNull(result)) {
+            return 0L;
+        }
+        return result;
     }
 
 
@@ -72,7 +76,10 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default List<T> selectList(Consumer<LambdaQueryExWrapper<T>> consumer) {
         List<T> result = ExecuteHelper.execute(this, consumer, BaseMapper::selectList, LambdaQueryExWrapper::new);
-        return Any.of(result).orElse(new ArrayList<>(0));
+        if (Objects.isNull(result)) {
+            return new ArrayList<>(0);
+        }
+        return result;
     }
 
     /**
@@ -80,7 +87,10 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default <P> List<T> selectList(P param) {
         Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
-        Wrapper<T> wrapper = WrapperUtil.getWrapper(clazz, param);
+        QueryExWrapper<T> wrapper = WrapperUtil.getWrapper(clazz, param);
+        if (!wrapper.needExecute()) {
+            return new ArrayList<>();
+        }
         return selectList(wrapper);
     }
 
@@ -180,11 +190,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
         return ExecuteHelper.execute(this, consumer, (m, w) -> m.selectOne(w, throwEx), LambdaQueryExWrapper::new);
     }
 
-    @Override
-    default T selectOne(Wrapper<T> queryWrapper, boolean throwEx) {
-        return selectOne(null, queryWrapper, throwEx);
-    }
-
     /**
      * 查询一个
      *
@@ -209,7 +214,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 为 selectOne 限制扫描行数：QueryEx 走方言 limit；其它 AbstractWrapper 追加 {@code LIMIT n}
      * （Oracle 等非 LIMIT 方言请优先使用 QueryExWrapper / LambdaQueryExWrapper）。
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes"})
     static void applySelectOneLimit(Wrapper<?> queryWrapper, boolean throwEx) {
         if (queryWrapper == null) {
             return;
@@ -229,8 +234,11 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param consumer 操作
      */
     default int update(T e, Consumer<LambdaUpdateExWrapper<T>> consumer) {
-        Integer update = ExecuteHelper.execute(this, consumer, (m, w) -> m.update(e, w), LambdaUpdateExWrapper::new);
-        return Any.of(update).orElse(0);
+        Integer result = ExecuteHelper.execute(this, consumer, (m, w) -> m.update(e, w), LambdaUpdateExWrapper::new);
+        if (Objects.isNull(result)) {
+            return 0;
+        }
+        return result;
     }
 
     /**
@@ -259,7 +267,10 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default int delete(Consumer<LambdaQueryExWrapper<T>> consumer) {
         Integer result = ExecuteHelper.execute(this, consumer, BaseMapper::delete, LambdaQueryExWrapper::new);
-        return Any.of(result).orElse(0);
+        if (Objects.isNull(result)) {
+            return 0;
+        }
+        return result;
     }
 
     /**
@@ -280,7 +291,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param funV   分组值处理方法
      */
     default <K extends Serializable, A> Map<K, List<A>> groupBy(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
-        if (EmptyUtil.isHadEmpty(field, values)) {
+        if (Objects.isNull(field) || EmptyUtil.isEmpty(values)) {
             return new HashMap<>(0);
         }
         return selectZtream(w -> w.in(field, values)).groupBy(field, funV);
@@ -317,7 +328,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param funV   值处理方法
      */
     default <K extends Serializable, A> Map<K, A> mapBy(SFunction<T, K> field, Collection<K> values, Function<T, A> funV) {
-        if (EmptyUtil.isHadEmpty(field, values)) {
+        if (Objects.isNull(field) || EmptyUtil.isEmpty(values)) {
             return new HashMap<>(0);
         }
         return selectZtream(w -> w.in(field, values)).toMap(field, funV);
