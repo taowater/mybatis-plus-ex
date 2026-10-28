@@ -13,7 +13,6 @@ import org.apache.ibatis.session.RowBounds;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -54,8 +53,9 @@ public class ReturnTypeInterceptor implements Interceptor {
         }
         Map<String, Object> map = (Map<String, Object>) args[1];
         if (map.containsKey(ExConstants.RETURN_TYPE)) {
-            Class<?> rt = (Class<?>) map.get(ExConstants.RETURN_TYPE);
-            if (Objects.nonNull(rt)) {
+            Object returnType = map.get(ExConstants.RETURN_TYPE);
+            if (returnType instanceof Class) {
+                Class<?> rt = (Class<?>) returnType;
                 args[0] = mappedStatementCache.computeIfAbsent(
                         buildCacheKey(ms, rt),
                         k -> buildMappedStatement(ms, rt, k)
@@ -81,9 +81,14 @@ public class ReturnTypeInterceptor implements Interceptor {
                 .timeout(ms.getTimeout())
                 .parameterMap(ms.getParameterMap())
                 .resultSetType(ms.getResultSetType())
+                .resultOrdered(ms.isResultOrdered())
+                .databaseId(ms.getDatabaseId())
                 .cache(ms.getCache())
                 .flushCacheRequired(ms.isFlushCacheRequired())
                 .useCache(ms.isUseCache());
+        if (ms.getResultSets() != null && ms.getResultSets().length != 0) {
+            builder.resultSets(String.join(StringPool.COMMA, ms.getResultSets()));
+        }
         if (ms.getKeyProperties() != null && ms.getKeyProperties().length != 0) {
             builder.keyProperty(String.join(StringPool.COMMA, ms.getKeyProperties()));
         }

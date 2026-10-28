@@ -53,6 +53,7 @@ class SelectList extends AbstractMethod {
                 return String.format("<script>SELECT * FROM ( %s SELECT %s FROM %s %s %s %s\n)%s\n</script>", sqlFirst,
                         selectColumns, tableName, whereClause, sqlOrderBy, sqlComment, rownum);
             case SQL_SERVER:
+            case SQL_SERVER2005:
                 return String.format("<script>%s SELECT %s %s FROM %s %s %s %s\n</script>",
                         sqlFirst, sqlLimit, selectColumns, tableName, whereClause, sqlOrderBy, sqlComment);
             default:
@@ -70,7 +71,7 @@ class SelectList extends AbstractMethod {
 
     protected String sqlLimit(DbType dbType) {
         String limitFormat = "LIMIT ${ew.limit}";
-        if (dbType == DbType.SQL_SERVER) {
+        if (dbType == DbType.SQL_SERVER || dbType == DbType.SQL_SERVER2005) {
             limitFormat = "TOP ${ew.limit}";
         } else if (dbType == DbType.DB2) {
             limitFormat = "FETCH FIRST ${ew.limit} ROWS ONLY";
