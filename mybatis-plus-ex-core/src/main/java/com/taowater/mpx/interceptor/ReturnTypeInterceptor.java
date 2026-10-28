@@ -19,7 +19,15 @@ import java.util.Properties;
  * 用于实现动态 resultType
  */
 @SuppressWarnings("unchecked")
-@Intercepts(@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}))
+@Intercepts({
+        @Signature(type = Executor.class, method = "query", args = {
+                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class
+        }),
+        @Signature(type = Executor.class, method = "query", args = {
+                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
+                org.apache.ibatis.cache.CacheKey.class, org.apache.ibatis.mapping.BoundSql.class
+        })
+})
 public class ReturnTypeInterceptor implements Interceptor {
 
     /**
