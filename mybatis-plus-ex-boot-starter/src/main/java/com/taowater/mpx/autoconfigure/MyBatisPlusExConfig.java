@@ -2,6 +2,8 @@ package com.taowater.mpx.autoconfigure;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.taowater.mpx.interceptor.ReturnTypeInterceptor;
+import com.taowater.mpx.interceptor.WrapperFillInterceptor;
+import com.taowater.mpx.fill.WrapperFillHandler;
 import com.taowater.mpx.method.ExMethodSqlInjector;
 import com.taowater.mpx.spring.entity.EntityScannerConfigurer;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
@@ -59,6 +62,13 @@ public class MyBatisPlusExConfig {
     @ConditionalOnMissingBean(ReturnTypeInterceptor.class)
     public ReturnTypeInterceptor exInterceptor() {
         return new ReturnTypeInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnBean(WrapperFillHandler.class)
+    @ConditionalOnMissingBean(WrapperFillInterceptor.class)
+    public WrapperFillInterceptor wrapperFillInterceptor(List<WrapperFillHandler> handlers) {
+        return new WrapperFillInterceptor(handlers);
     }
 
     public static class AutoConfiguredEntityScannerRegistrar

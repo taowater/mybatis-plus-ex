@@ -32,9 +32,11 @@ public class ExMethodSqlInjector extends DefaultSqlInjector {
         List<AbstractMethod> methodList = super.getMethodList(configuration, mapperClass, tableInfo);
         // 移除原来的selectList方法
         methodList.removeIf(e -> e instanceof com.baomidou.mybatisplus.core.injector.methods.SelectList);
+        methodList.removeIf(e -> e instanceof com.baomidou.mybatisplus.core.injector.methods.Update);
         // 2. 添加自定义方法（DbType 仅探测一次并缓存，避免按表借连接）
         DbType type = resolveDbType(configuration);
         return Ztream.of(methodList)
+                .append(new UpdateWithWrapperFill())
                 .append(new SelectExists(type))
                 .append(new SelectList(type))
                 .toList();

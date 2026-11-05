@@ -12,7 +12,6 @@ import com.taowater.mpx.wrapper.LambdaUpdateExWrapper;
 import com.taowater.mpx.wrapper.QueryExWrapper;
 import com.taowater.mpx.wrapper.interfaces.QueryEx;
 import com.taowater.taol.core.convert.ConvertUtil;
-import com.taowater.taol.core.reflect.ClassUtil;
 import com.taowater.taol.core.reflect.TypeUtil;
 import com.taowater.taol.core.util.EmptyUtil;
 import com.taowater.ztream.Any;
@@ -242,22 +241,12 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     }
 
     /**
-     * 重写以支持自动填充
-     */
-    @Override
-    default int update(@Param(Constants.WRAPPER) Wrapper<T> updateWrapper) {
-        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
-        return update(ClassUtil.newInstance(clazz), updateWrapper);
-    }
-
-    /**
      * 更新操作
      *
      * @param consumer 操作
      */
     default int update(Consumer<LambdaUpdateExWrapper<T>> consumer) {
-        Class<T> clazz = (Class<T>) TypeUtil.getTypeArgument(this.getClass(), BaseMapper.class);
-        return update(ClassUtil.newInstance(clazz), consumer);
+        return update(null, consumer);
     }
 
     /**
